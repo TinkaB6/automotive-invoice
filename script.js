@@ -3,6 +3,37 @@ function showTab(id){
   document.getElementById(id).classList.remove('hidden');
 }
 
+// === CREATE INVOICE ===
+const invoiceForm = document.getElementById('invoiceForm');
+const companyName = document.getElementById('companyName');
+const invoiceNumber = document.getElementById('invoiceNumber');
+const clientName = document.getElementById('clientName');
+const invoiceAmount = document.getElementById('invoiceAmount');
+const invoiceList = document.getElementById('invoiceList');
+
+invoiceForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const invoices = JSON.parse(localStorage.getItem('invoices')||'[]');
+  invoices.push({ company: companyName.value, number: invoiceNumber.value, client: clientName.value, amount: +invoiceAmount.value });
+  localStorage.setItem('invoices', JSON.stringify(invoices));
+  invoiceForm.reset();
+  renderInvoices();
+});
+
+function renderInvoices(){
+  const invoices = JSON.parse(localStorage.getItem('invoices')||'[]');
+  invoiceList.innerHTML = invoices.map((inv, i) => `
+    <div><strong>${inv.company}</strong> Invoice #${inv.number} for ${inv.client} – R${inv.amount.toFixed(2)}
+    <button onclick="deleteInvoice(${i})">🗑️</button></div>
+  `).join('');
+}
+function deleteInvoice(i){
+  const invoices = JSON.parse(localStorage.getItem('invoices')||'[]');
+  invoices.splice(i,1);
+  localStorage.setItem('invoices', JSON.stringify(invoices));
+  renderInvoices();
+}
+
 // === SUPPLIERS ===
 const supplierForm = document.getElementById('supplierForm');
 const sName = document.getElementById('sName');
@@ -103,7 +134,6 @@ stockForm.addEventListener('submit', e => {
   let list = JSON.parse(localStorage.getItem('stock')||'[]');
   const index = list.findIndex(item => item.name.toLowerCase() === stockName.value.toLowerCase());
   if(index >= 0){
-    // If item exists, update quantity & prices
     list[index].quantity += +stockQty.value;
     list[index].cost = +stockCost.value;
     list[index].sell = +stockSell.value;
@@ -124,7 +154,6 @@ function renderStock(){
     </div>
   `).join('');
 }
-
 function deleteStock(i){
   const list = JSON.parse(localStorage.getItem('stock')||'[]');
   list.splice(i,1);
@@ -176,35 +205,15 @@ function completeSale(){
     return;
   }
   let total = posCart.reduce((sum, item)=> sum + item.price * item.qty, 0);
-
-  // Save to daily sales
-  const today = new Date().toISOString().slice(0,10); // e.g. 2025-07-10
+  const today = new Date().toISOString().slice(0,10);
   let sales = JSON.parse(localStorage.getItem('sales')||'{}');
   sales[today] = (sales[today]||0) + total;
   localStorage.setItem('sales', JSON.stringify(sales));
-
   alert("Sale completed. Total: R" + total.toFixed(2));
   posCart = [];
   renderPOS();
 }
 
-}
-
-// === INIT ALL ON TAB OPEN ===
-document.querySelectorAll('button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    renderSuppliers();
-    renderDebtors();
-    renderCreditors();
-    renderStock();
-    renderPOS();
-    renderPetty();
-    renderReports();
-  });
-});
-
-  });
-});
 // === PETTY CASH ===
 const pettyForm = document.getElementById('pettyForm');
 const pettyDesc = document.getElementById('pettyDesc');
@@ -230,13 +239,13 @@ function renderPetty(){
     <button onclick="deletePetty(${i})">🗑️</button></div>
   `).join('');
 }
-
 function deletePetty(i){
   const list = JSON.parse(localStorage.getItem('petty')||'[]');
   list.splice(i,1);
   localStorage.setItem('petty', JSON.stringify(list));
   renderPetty();
 }
+
 // === DAILY REPORTS ===
 const reportList = document.getElementById('reportList');
 
@@ -247,3 +256,18 @@ function renderReports(){
     ? days.map(day=> `<div>${day}: R${sales[day].toFixed(2)}</div>`).join('')
     : "<div>No sales recorded yet.</div>";
 }
+
+// === INIT ON TAB OPEN ===
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    renderInvoices();
+    renderSuppliers();
+    renderDebtors();
+    renderCreditors();
+    renderStock();
+    renderPOS();
+    renderPetty();
+    renderReports();
+  });
+});
+showTab('create'); // show default tab
