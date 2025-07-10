@@ -6,9 +6,8 @@ function loadData(key) {
   return JSON.parse(localStorage.getItem(key) || "[]");
 }
 
-// -- Ribbon navigation --
+// Ribbon navigation
 document.addEventListener("DOMContentLoaded", () => {
-  // Tab switching
   document.querySelectorAll('.ribbon-tabs button').forEach(tabBtn => {
     tabBtn.addEventListener('click', () => {
       document.querySelectorAll('.ribbon-tabs button').forEach(b => b.classList.remove('active'));
@@ -18,77 +17,64 @@ document.addEventListener("DOMContentLoaded", () => {
         if(g.dataset.group === group) g.classList.add('active');
         else g.classList.remove('active');
       });
-      // Clear workspace
       showWelcome();
     });
   });
 
-  // Sub-action click
   document.querySelectorAll('.ribbon-btn').forEach(actionBtn => {
     actionBtn.addEventListener('click', () => {
-      const action = actionBtn.dataset.action;
-      showWorkspace(action);
+      showWorkspace(actionBtn.dataset.action);
     });
   });
 
-  // Show Welcome on load
   showWelcome();
 });
 
-// -- Workspace loader --
+// Workspace loader
 function showWorkspace(action) {
-  const workspace = document.getElementById('workspace');
-  switch(action) {
-    // Processing
-    case "purchase-orders": renderPOPage(workspace); break;
-    case "invoicing": renderInvoicePage(workspace); break;
-    case "goods-receiving": renderGoodsReceivingPage(workspace); break;
-    case "return-to-suppliers": renderReturnSuppliersPage(workspace); break;
-    case "credit-notes": renderCreditNotesPage(workspace); break;
-    case "quotes": renderQuotesPage(workspace); break;
-
-    // Debtors
-    case "debtors-maintenance": renderDebtorMaintenancePage(workspace); break;
-    case "debtors-add": renderDebtorAddPage(workspace); break;
-    case "debtors-enquiries": renderDebtorEnquiriesPage(workspace); break;
-    case "debtors-receipts": renderDebtorReceiptsPage(workspace); break;
-
-    // Creditors
-    case "creditors-maintenance": renderCreditorMaintenancePage(workspace); break;
-    case "creditors-add": renderCreditorAddPage(workspace); break;
-    case "creditors-enquiries": renderCreditorEnquiriesPage(workspace); break;
-    case "creditors-receipts": renderCreditorReceiptsPage(workspace); break;
-
-    // Stock
-    case "product-list": renderStockProductListPage(workspace); break;
-    case "stock-in": renderStockInPage(workspace); break;
-    case "stock-out": renderStockOutPage(workspace); break;
-    case "stock-adjustment": renderStockAdjustmentPage(workspace); break;
-    case "stock-transfer": renderStockTransferPage(workspace); break;
-    case "low-stock-alerts": renderLowStockAlertsPage(workspace); break;
-    case "stock-history": renderStockHistoryPage(workspace); break;
-
-    // POS
-    case "new-sale": renderPOSNewSalePage(workspace); break;
-    case "hold-resume-sale": renderPOSHoldResumePage(workspace); break;
-    case "customer-search": renderPOSCustomerSearchPage(workspace); break;
-    case "product-search": renderPOSProductSearchPage(workspace); break;
-    case "discounts-offers": renderPOSDiscountsOffersPage(workspace); break;
-    case "payment": renderPOSPaymentPage(workspace); break;
-    case "print-email-receipt": renderPOSPrintEmailPage(workspace); break;
-    case "sales-history": renderPOSSalesHistoryPage(workspace); break;
-    case "refunds-returns": renderPOSRefundsReturnsPage(workspace); break;
-    case "cash-drawer": renderPOSCashDrawerPage(workspace); break;
-
-    // Reports
-    case "stock-reports": renderStockReportsPage(workspace); break;
-    case "sales-reports": renderSalesReportsPage(workspace); break;
-    case "analytics": renderAnalyticsPage(workspace); break;
-
-    // Default
-    default:
-      workspace.innerHTML = `<h2>${action}</h2><p>Not implemented.</p>`;
-  }
+  const ws = document.getElementById('workspace');
+  // Processing
+  if(action==="purchase-orders") return renderPurchaseOrders(ws);
+  if(action==="invoicing") return renderInvoicing(ws);
+  if(action==="goods-receiving") return renderGoodsReceiving(ws);
+  if(action==="return-to-suppliers") return renderReturnToSuppliers(ws);
+  if(action==="credit-notes") return renderCreditNotes(ws);
+  if(action==="quotes") return renderQuotes(ws);
+  // Debtors
+  if(action==="debtors-maintenance") return renderDebtorMaintenance(ws);
+  if(action==="debtors-add") return renderDebtorAdd(ws);
+  if(action==="debtors-enquiries") return renderDebtorEnquiries(ws);
+  if(action==="debtors-receipts") return renderDebtorReceipts(ws);
+  // Creditors
+  if(action==="creditors-maintenance") return renderCreditorMaintenance(ws);
+  if(action==="creditors-add") return renderCreditorAdd(ws);
+  if(action==="creditors-enquiries") return renderCreditorEnquiries(ws);
+  if(action==="creditors-receipts") return renderCreditorReceipts(ws);
+  // Stock
+  if(action==="product-list") return renderProductList(ws);
+  if(action==="stock-in") return renderStockIn(ws);
+  if(action==="stock-out") return renderStockOut(ws);
+  if(action==="stock-adjustment") return renderStockAdjustment(ws);
+  if(action==="stock-transfer") return renderStockTransfer(ws);
+  if(action==="low-stock-alerts") return renderLowStockAlerts(ws);
+  if(action==="stock-history") return renderStockHistory(ws);
+  // POS
+  if(action==="new-sale") return renderNewSale(ws);
+  if(action==="hold-resume-sale") return renderHoldResumeSale(ws);
+  if(action==="customer-search") return renderCustomerSearch(ws);
+  if(action==="product-search") return renderProductSearch(ws);
+  if(action==="discounts-offers") return renderDiscountsOffers(ws);
+  if(action==="payment") return renderPayment(ws);
+  if(action==="print-email-receipt") return renderPrintEmailReceipt(ws);
+  if(action==="sales-history") return renderSalesHistory(ws);
+  if(action==="refunds-returns") return renderRefundsReturns(ws);
+  if(action==="cash-drawer") return renderCashDrawer(ws);
+  // Reports
+  if(action==="stock-reports") return renderStockReports(ws);
+  if(action==="sales-reports") return renderSalesReports(ws);
+  if(action==="analytics") return renderAnalytics(ws);
+  // Default
+  ws.innerHTML = `<h2>${action}</h2><p>Not implemented.</p>`;
 }
 function showWelcome() {
   document.getElementById('workspace').innerHTML = `
@@ -97,168 +83,208 @@ function showWelcome() {
   `;
 }
 
-// ---- Demo Implementation: Processing > Invoicing ----
-function renderInvoicePage(ws) {
-  ws.innerHTML = `
-    <h2>Invoicing</h2>
-    <form id="invoiceForm">
-      <label>Invoice #</label>
-      <input name="number" required>
-      <label>Date</label>
-      <input name="date" type="date" required>
-      <label>Customer</label>
-      <input name="customer" required>
-      <label>Amount</label>
-      <input name="amount" type="number" step="0.01" required>
-      <button type="submit">Add Invoice</button>
-    </form>
-    <table class="table-list" id="invoiceTable">
-      <thead>
-        <tr>
-          <th>Invoice #</th>
-          <th>Date</th>
-          <th>Customer</th>
-          <th>Amount</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  `;
-  let invoices = loadData("invoices");
-  const table = ws.querySelector("#invoiceTable tbody");
-  function render() {
-    table.innerHTML = invoices.map((inv, i) => `
-      <tr>
-        <td>${inv.number}</td>
-        <td>${inv.date}</td>
-        <td>${inv.customer}</td>
-        <td>R ${parseFloat(inv.amount).toFixed(2)}</td>
-        <td>
-          <button class="action-btn" onclick="editInvoice(${i})">Edit</button>
-          <button class="action-btn" onclick="deleteInvoice(${i})">Delete</button>
-        </td>
-      </tr>
-    `).join("");
-  }
-  render();
-  ws.querySelector("#invoiceForm").onsubmit = e => {
-    e.preventDefault();
-    let f = e.target;
-    invoices.push({
-      number: f.number.value,
-      date: f.date.value,
-      customer: f.customer.value,
-      amount: f.amount.value
-    });
-    saveData("invoices", invoices);
-    render();
-    f.reset();
-  };
-  window.editInvoice = function(i) {
-    let inv = invoices[i];
-    let nf = ws.querySelector("#invoiceForm");
-    nf.number.value = inv.number;
-    nf.date.value = inv.date;
-    nf.customer.value = inv.customer;
-    nf.amount.value = inv.amount;
-    invoices.splice(i, 1);
-    render();
-    saveData("invoices", invoices);
-  };
-  window.deleteInvoice = function(i) {
-    if (confirm("Delete this invoice?")) {
-      invoices.splice(i, 1);
-      saveData("invoices", invoices);
-      render();
-    }
-  };
-}
+// --- Processing: All Sub Actions ---
+function renderPurchaseOrders(ws) { renderBasicFormList(ws, "Purchase Orders", "purchaseOrders", ["Order #","Supplier","Date","Amount"], ["orderNo","supplier","date","amount"]); }
+function renderInvoicing(ws)      { renderBasicFormList(ws, "Invoicing", "invoices", ["Invoice #","Customer","Date","Amount"], ["invoiceNo","customer","date","amount"]); }
+function renderGoodsReceiving(ws) { renderBasicFormList(ws, "Goods Receiving", "goodsReceiving", ["GRN #","Supplier","Date","Amount"], ["grnNo","supplier","date","amount"]); }
+function renderReturnToSuppliers(ws) { renderBasicFormList(ws, "Return to Suppliers", "returnToSuppliers", ["Return #","Supplier","Date","Amount"], ["returnNo","supplier","date","amount"]); }
+function renderCreditNotes(ws)    { renderBasicFormList(ws, "Credit Notes", "creditNotes", ["Credit Note #","Customer","Date","Amount"], ["creditNo","customer","date","amount"]); }
+function renderQuotes(ws)         { renderBasicFormList(ws, "Quotes", "quotes", ["Quote #","Customer","Date","Amount"], ["quoteNo","customer","date","amount"]); }
 
-// ---- Demo Implementation: Stock > Product List ----
-function renderStockProductListPage(ws) {
-  ws.innerHTML = `
-    <h2>Product List</h2>
-    <form id="productForm">
-      <label>SKU</label>
-      <input name="sku" required>
-      <label>Name</label>
-      <input name="name" required>
-      <label>Qty</label>
-      <input name="qty" type="number" min="0" required>
-      <label>Cost</label>
-      <input name="cost" type="number" step="0.01" required>
-      <label>Selling Price</label>
-      <input name="price" type="number" step="0.01" required>
-      <button type="submit">Add Product</button>
-    </form>
-    <table class="table-list" id="productTable">
-      <thead>
-        <tr>
-          <th>SKU</th>
-          <th>Name</th>
-          <th>Qty</th>
-          <th>Cost</th>
-          <th>Sell Price</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  `;
+// --- Debtors ---
+function renderDebtorMaintenance(ws) { renderBasicFormList(ws, "Debtor Maintenance", "debtorMaintenance", ["Account #","Name","Contact"], ["accountNo","name","contact"]); }
+function renderDebtorAdd(ws)         { renderBasicFormList(ws, "Add Debtor", "debtors", ["Account #","Name","Contact"], ["accountNo","name","contact"]); }
+function renderDebtorEnquiries(ws)   { renderSearchList(ws, "Debtor Enquiries", "debtors", ["Account #","Name","Contact"], ["accountNo","name","contact"]); }
+function renderDebtorReceipts(ws)    { renderBasicFormList(ws, "Debtor Receipts", "debtorReceipts", ["Receipt #","Account #","Amount","Date"], ["receiptNo","accountNo","amount","date"]); }
+
+// --- Creditors ---
+function renderCreditorMaintenance(ws) { renderBasicFormList(ws, "Creditor Maintenance", "creditorMaintenance", ["Account #","Name","Contact"], ["accountNo","name","contact"]); }
+function renderCreditorAdd(ws)         { renderBasicFormList(ws, "Add Creditor", "creditors", ["Account #","Name","Contact"], ["accountNo","name","contact"]); }
+function renderCreditorEnquiries(ws)   { renderSearchList(ws, "Creditor Enquiries", "creditors", ["Account #","Name","Contact"], ["accountNo","name","contact"]); }
+function renderCreditorReceipts(ws)    { renderBasicFormList(ws, "Creditor Receipts", "creditorReceipts", ["Receipt #","Account #","Amount","Date"], ["receiptNo","accountNo","amount","date"]); }
+
+// --- Stock ---
+function renderProductList(ws)    { renderBasicFormList(ws, "Product List", "products", ["SKU","Name","Qty","Cost","Sell Price"], ["sku","name","qty","cost","price"]); }
+function renderStockIn(ws)        { renderBasicFormList(ws, "Stock In", "stockIn", ["SKU","Qty","Date"], ["sku","qty","date"]); }
+function renderStockOut(ws)       { renderBasicFormList(ws, "Stock Out", "stockOut", ["SKU","Qty","Date"], ["sku","qty","date"]); }
+function renderStockAdjustment(ws){ renderBasicFormList(ws, "Stock Adjustment", "stockAdjust", ["SKU","Old Qty","New Qty","Reason"], ["sku","oldqty","newqty","reason"]); }
+function renderStockTransfer(ws)  { renderBasicFormList(ws, "Stock Transfer", "stockTransfer", ["SKU","From","To","Qty","Date"], ["sku","from","to","qty","date"]); }
+function renderLowStockAlerts(ws) {
   let products = loadData("products");
-  const table = ws.querySelector("#productTable tbody");
-  function render() {
-    table.innerHTML = products.map((p, i) => `
-      <tr>
-        <td>${p.sku}</td>
-        <td>${p.name}</td>
-        <td>${p.qty}</td>
-        <td>R ${parseFloat(p.cost).toFixed(2)}</td>
-        <td>R ${parseFloat(p.price).toFixed(2)}</td>
-        <td>
-          <button class="action-btn" onclick="editProduct(${i})">Edit</button>
-          <button class="action-btn" onclick="deleteProduct(${i})">Delete</button>
-        </td>
-      </tr>
-    `).join("");
-  }
-  render();
-  ws.querySelector("#productForm").onsubmit = e => {
-    e.preventDefault();
-    let f = e.target;
-    products.push({
-      sku: f.sku.value,
-      name: f.name.value,
-      qty: parseInt(f.qty.value),
-      cost: f.cost.value,
-      price: f.price.value
-    });
-    saveData("products", products);
-    render();
-    f.reset();
-  };
-  window.editProduct = function(i) {
-    let p = products[i];
-    let nf = ws.querySelector("#productForm");
-    nf.sku.value = p.sku;
-    nf.name.value = p.name;
-    nf.qty.value = p.qty;
-    nf.cost.value = p.cost;
-    nf.price.value = p.price;
-    products.splice(i, 1);
-    saveData("products", products);
-    render();
-  };
-  window.deleteProduct = function(i) {
-    if (confirm("Delete this product?")) {
-      products.splice(i, 1);
-      saveData("products", products);
-      render();
-    }
-  };
+  ws.innerHTML = `<h2>Low Stock Alerts</h2><table class="table-list"><tr><th>SKU</th><th>Name</th><th>Qty</th></tr>${
+    products.filter(p=>parseInt(p.qty)<5).map(p=>`<tr><td>${p.sku}</td><td>${p.name}</td><td>${p.qty}</td></tr>`).join("")||'<tr><td colspan="3">No low stock items.</td></tr>'
+  }</table>`;
+}
+function renderStockHistory(ws) {
+  ws.innerHTML = `<h2>Stock History</h2>
+    <p>(Shows all stock in, out, adjustments and transfers)</p>
+    <div>
+      <b>Stock In:</b>
+      <ul>${loadData("stockIn").map(s=>`<li>${s.date||''} SKU:${s.sku} +${s.qty}</li>`).join("")}</ul>
+      <b>Stock Out:</b>
+      <ul>${loadData("stockOut").map(s=>`<li>${s.date||''} SKU:${s.sku} -${s.qty}</li>`).join("")}</ul>
+      <b>Adjustments:</b>
+      <ul>${loadData("stockAdjust").map(s=>`<li>SKU:${s.sku} ${s.oldqty}→${s.newqty} (${s.reason})</li>`).join("")}</ul>
+      <b>Transfers:</b>
+      <ul>${loadData("stockTransfer").map(s=>`<li>${s.date||''} SKU:${s.sku} ${s.from}→${s.to} (${s.qty})</li>`).join("")}</ul>
+    </div>`;
 }
 
-// ---- You can expand similarly for all other actions (copy Invoice/Product List patterns) ----
-// For brevity, only a couple of representative screens are implemented fully here.
-// Let me know the next screens you want prioritized and I will generate them for you in full detail.
+// --- POS ---
+function renderNewSale(ws) {
+  ws.innerHTML = `<h2>New Sale</h2>
+    <form id="saleForm">
+      <label>Product SKU</label>
+      <input name="sku" required>
+      <label>Qty</label>
+      <input name="qty" type="number" min="1" value="1" required>
+      <button type="submit">Add to Cart</button>
+    </form>
+    <div id="saleCart"></div>
+    <button id="completeSaleBtn">Complete Sale</button>`;
+  let cart = [];
+  function renderCart() {
+    ws.querySelector("#saleCart").innerHTML = cart.length===0?'<em>No items in cart.</em>':`
+      <table class="table-list"><tr><th>SKU</th><th>Qty</th><th>Remove</th></tr>${
+        cart.map((c,i)=>`<tr><td>${c.sku}</td><td>${c.qty}</td>
+        <td><button class="action-btn" onclick="removeCartItem(${i})">Delete</button></td></tr>`).join("")
+      }</table>`;
+  }
+  ws.querySelector("#saleForm").onsubmit = e => {
+    e.preventDefault();
+    let f = e.target;
+    cart.push({sku:f.sku.value,qty:parseInt(f.qty.value)});
+    renderCart();f.reset();
+  };
+  window.removeCartItem = i => { cart.splice(i,1); renderCart(); };
+  ws.querySelector("#completeSaleBtn").onclick=()=>{
+    let sales = loadData("sales");
+    let t = new Date().toISOString();
+    sales.push({cart:JSON.parse(JSON.stringify(cart)),time:t});
+    saveData("sales",sales);
+    cart=[];renderCart();
+    alert("Sale completed!");
+  };
+  renderCart();
+}
+function renderHoldResumeSale(ws) {
+  ws.innerHTML = `<h2>Hold/Resume Sale</h2><p>Feature for pausing/resuming sales (not implemented).</p>`;
+}
+function renderCustomerSearch(ws) {
+  ws.innerHTML = `<h2>Customer Search</h2>
+    <input id="customerSearchBox" placeholder="Search by name or account #">
+    <ul id="custResults"></ul>`;
+  let debtors = loadData("debtors");
+  const box = ws.querySelector("#customerSearchBox");
+  const res = ws.querySelector("#custResults");
+  box.oninput = ()=>{
+    let q = box.value.toLowerCase();
+    res.innerHTML = debtors.filter(d=>d.name.toLowerCase().includes(q)||d.accountNo.toLowerCase().includes(q))
+      .map(d=>`<li>${d.accountNo} - ${d.name} (${d.contact})</li>`).join("") || "<li>No results</li>";
+  };
+}
+function renderProductSearch(ws) {
+  ws.innerHTML = `<h2>Product Search/Scan</h2>
+    <input id="productSearchBox" placeholder="Search by SKU or name">
+    <ul id="prodResults"></ul>`;
+  let products = loadData("products");
+  const box = ws.querySelector("#productSearchBox");
+  const res = ws.querySelector("#prodResults");
+  box.oninput = ()=>{
+    let q = box.value.toLowerCase();
+    res.innerHTML = products.filter(p=>p.sku.toLowerCase().includes(q)||p.name.toLowerCase().includes(q))
+      .map(p=>`<li>${p.sku} - ${p.name} (Qty: ${p.qty})</li>`).join("") || "<li>No results</li>";
+  };
+}
+function renderDiscountsOffers(ws) { ws.innerHTML = `<h2>Discounts & Offers</h2><p>(Configure discounts/promotions here.)</p>`; }
+function renderPayment(ws) { ws.innerHTML = `<h2>Payment</h2><p>Feature to process payments (not implemented).</p>`; }
+function renderPrintEmailReceipt(ws) { ws.innerHTML = `<h2>Print/Email Receipt</h2><p>Feature to print or email receipts (not implemented).</p>`; }
+function renderSalesHistory(ws) {
+  let sales = loadData("sales");
+  ws.innerHTML = `<h2>Sales History</h2>
+    <table class="table-list"><tr><th>Date</th><th>Items</th></tr>${
+      sales.map(s=>`<tr><td>${s.time}</td><td>${
+        s.cart.map(i=>`${i.sku} x${i.qty}`).join("<br>")
+      }</td></tr>`).join("")||'<tr><td colspan="2">No sales yet.</td></tr>'
+    }</table>`;
+}
+function renderRefundsReturns(ws) {
+  ws.innerHTML = `<h2>Refunds/Returns</h2><p>Feature to process returns or refunds (not implemented).</p>`;
+}
+function renderCashDrawer(ws) {
+  ws.innerHTML = `<h2>Cash Drawer</h2><p>Function to manage cash drawer (not implemented).</p>`;
+}
+
+// --- Reports ---
+function renderStockReports(ws) {
+  ws.innerHTML = `<h2>Stock Reports</h2>
+    <table class="table-list"><tr><th>SKU</th><th>Name</th><th>Qty</th><th>Sell Price</th></tr>${
+      loadData("products").map(p=>`<tr><td>${p.sku}</td><td>${p.name}</td><td>${p.qty}</td><td>${p.price}</td></tr>`).join("")||'<tr><td colspan="4">No data.</td></tr>'
+    }</table>`;
+}
+function renderSalesReports(ws) {
+  let sales = loadData("sales");
+  let total = sales.reduce((s, sale) => s + sale.cart.reduce((t, i) => t + (parseInt(i.qty)||0), 0), 0);
+  ws.innerHTML = `<h2>Sales Reports</h2>
+    <p>Total sales: ${sales.length}, Total items sold: ${total}</p>`;
+}
+function renderAnalytics(ws) {
+  ws.innerHTML = `<h2>Analytics</h2><p>(Graphs or analytics can go here.)</p>`;
+}
+
+// --- Generic form+list rendering helpers ---
+function renderBasicFormList(ws, title, storageKey, labels, fields) {
+  ws.innerHTML = `<h2>${title}</h2>
+    <form id="genericForm">${fields.map((f,i)=>`
+      <label>${labels[i]}</label>
+      <input name="${f}" ${f.includes("date")?'type="date"':''} required>
+    `).join("")}
+      <button type="submit">Add</button>
+    </form>
+    <table class="table-list" id="genericTable">
+      <thead><tr>${labels.map(l=>`<th>${l}</th>`).join("")}<th>Actions</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  `;
+  let data = loadData(storageKey);
+  const table = ws.querySelector("#genericTable tbody");
+  function render() {
+    table.innerHTML = data.map((row,i)=>`
+      <tr>
+        ${fields.map(f=>`<td>${row[f]}</td>`).join("")}
+        <td>
+          <button class="action-btn" onclick="window.editRow('${storageKey}',${i})">Edit</button>
+          <button class="action-btn" onclick="window.deleteRow('${storageKey}',${i})">Delete</button>
+        </td>
+      </tr>`).join("");
+  }
+  render();
+  ws.querySelector("#genericForm").onsubmit = e => {
+    e.preventDefault();
+    let f = e.target;
+    let o = {};
+    fields.forEach(ff=>o[ff]=f[ff].value);
+    data.push(o); saveData(storageKey,data); render(); f.reset();
+  };
+  window.editRow = (k,i)=>{
+    let row = data[i], f = ws.querySelector("#genericForm");
+    fields.forEach(ff=>f[ff].value=row[ff]);
+    data.splice(i,1); saveData(storageKey,data); render();
+  };
+  window.deleteRow = (k,i)=>{
+    if(confirm("Delete this entry?")){ data.splice(i,1); saveData(storageKey,data); render(); }
+  };
+}
+function renderSearchList(ws, title, storageKey, labels, fields) {
+  ws.innerHTML = `<h2>${title}</h2>
+    <input id="searchBox" placeholder="Search...">
+    <table class="table-list"><thead><tr>${labels.map(l=>`<th>${l}</th>`).join("")}</tr></thead><tbody id="searchTable"></tbody></table>`;
+  let data = loadData(storageKey);
+  const table = ws.querySelector("#searchTable");
+  function render(q="") {
+    let filtered = data.filter(row=>fields.some(f=>(row[f]||"").toLowerCase().includes(q.toLowerCase())));
+    table.innerHTML = filtered.map(row=>`<tr>${fields.map(f=>`<td>${row[f]}</td>`).join("")}</tr>`).join("")||"<tr><td colspan='"+fields.length+"'>No results</td></tr>";
+  }
+  render();
+  ws.querySelector("#searchBox").oninput = e => render(e.target.value);
+}
