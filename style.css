@@ -9,14 +9,12 @@ body {
   background: radial-gradient(ellipse at center, #2c3e50 0%, #15406d 100%);
   min-height: 100vh;
 }
-
 .ribbon {
   background: #e5eefd;
   border-bottom: 1px solid #b5c7e6;
   box-shadow: 0 2px 8px #0001;
   padding-bottom: 0.5rem;
 }
-
 .ribbon-tabs {
   display: flex;
   gap: 0.25rem;
@@ -40,7 +38,6 @@ body {
   background: #e5eefd;
   color: #2161ae;
 }
-
 .ribbon-actions {
   display: flex;
 }
@@ -50,7 +47,6 @@ body {
   padding: 0.5rem 1rem 0.5rem 0.7rem;
 }
 .ribbon-actions-group.active { display: flex; }
-
 .ribbon-btn {
   display: flex;
   flex-direction: column;
@@ -81,7 +77,6 @@ body {
   border-color: #8eb6e2;
   color: #2161ae;
 }
-
 main.desktop-bg {
   width: 100vw;
   min-height: calc(100vh - 110px);
@@ -91,7 +86,6 @@ main.desktop-bg {
   justify-content: flex-start;
   padding: 2rem;
 }
-
 .workspace-panel {
   background: rgba(255,255,255,0.95);
   border-radius: 12px;
@@ -101,50 +95,10 @@ main.desktop-bg {
   padding: 2.2rem 2.6rem;
   margin-top: 0;
   margin-left: 0;
-  max-width: 90vw;
-  max-height: 80vh;
+  max-width: 95vw;
+  max-height: 85vh;
   overflow: auto;
 }
-
-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 2rem;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-form label {
-  min-width: 100px;
-  font-weight: 500;
-}
-form input, form select {
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #b5c7e6;
-  border-radius: 6px;
-  min-width: 120px;
-  font-size: 1rem;
-  background: #f7faff;
-  transition: border 0.2s;
-}
-form input:focus, form select:focus {
-  border: 1.5px solid #2c7a7b;
-  outline: none;
-}
-form button[type="submit"] {
-  background: #2c7a7b;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.4rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 0.2rem;
-  transition: background 0.2s;
-}
-form button[type="submit"]:hover {
-  background: #38b2ac;
-}
-
 .table-list {
   width: 100%;
   border-collapse: collapse;
@@ -177,7 +131,77 @@ form button[type="submit"]:hover {
 .table-list .action-btn:hover {
   background: #38b2ac;
 }
-
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+form label {
+  min-width: 100px;
+  font-weight: 500;
+}
+form input, form select, form textarea {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #b5c7e6;
+  border-radius: 6px;
+  min-width: 120px;
+  font-size: 1rem;
+  background: #f7faff;
+  transition: border 0.2s;
+}
+form input:focus, form select:focus, form textarea:focus {
+  border: 1.5px solid #2c7a7b;
+  outline: none;
+}
+form button[type="submit"],
+form button[type="button"] {
+  background: #2c7a7b;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 0.2rem;
+  transition: background 0.2s;
+}
+form button[type="submit"]:hover,
+form button[type="button"]:hover {
+  background: #38b2ac;
+}
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  min-width: 320px;
+  min-height: 100px;
+  box-shadow: 0 4px 24px #0004;
+  max-width: 95vw;
+  max-height: 92vh;
+  overflow: auto;
+  position: relative;
+}
+.modal .close-modal {
+  position: absolute;
+  top: 0.7em;
+  right: 1.2em;
+  background: none;
+  border: none;
+  font-size: 1.7em;
+  color: #888;
+  cursor: pointer;
+}
 @media (max-width: 900px) {
   .ribbon-actions-group {
     flex-wrap: wrap;
@@ -200,4 +224,9 @@ form button[type="submit"]:hover {
     flex-direction: column;
     gap: 0.5rem;
   }
+}
+@media print {
+  body, .workspace-panel, .modal, .table-list { background: white !important; color: black !important; }
+  .ribbon, .ribbon-tabs, .ribbon-actions, .modal-bg { display: none !important; }
+  .workspace-panel { box-shadow: none !important; }
 }
