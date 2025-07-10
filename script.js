@@ -161,3 +161,44 @@ document.querySelectorAll('button').forEach(btn => {
     renderCreditors();
   });
 });
+// === STOCK ===
+const stockForm = document.getElementById('stockForm');
+const stockName = document.getElementById('stockName');
+const stockQty = document.getElementById('stockQty');
+const stockCost = document.getElementById('stockCost');
+const stockSell = document.getElementById('stockSell');
+const stockList = document.getElementById('stockList');
+
+stockForm.addEventListener('submit', e => {
+  e.preventDefault();
+  let list = JSON.parse(localStorage.getItem('stock')||'[]');
+  const index = list.findIndex(item => item.name.toLowerCase() === stockName.value.toLowerCase());
+  if(index >= 0){
+    // If item exists, update quantity & prices
+    list[index].quantity += +stockQty.value;
+    list[index].cost = +stockCost.value;
+    list[index].sell = +stockSell.value;
+  } else {
+    list.push({ name: stockName.value, quantity: +stockQty.value, cost: +stockCost.value, sell: +stockSell.value });
+  }
+  localStorage.setItem('stock', JSON.stringify(list));
+  stockForm.reset();
+  renderStock();
+});
+
+function renderStock(){
+  const list = JSON.parse(localStorage.getItem('stock')||'[]');
+  stockList.innerHTML = list.map((item, i) => `
+    <div>
+      <strong>${item.name}</strong> – Qty: ${item.quantity}, Cost: R${item.cost.toFixed(2)}, Sell: R${item.sell.toFixed(2)}
+      <button onclick="deleteStock(${i})">🗑️</button>
+    </div>
+  `).join('');
+}
+
+function deleteStock(i){
+  const list = JSON.parse(localStorage.getItem('stock')||'[]');
+  list.splice(i,1);
+  localStorage.setItem('stock', JSON.stringify(list));
+  renderStock();
+}
