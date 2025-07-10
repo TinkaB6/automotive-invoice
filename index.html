@@ -14,10 +14,45 @@
     <p>Tel: 083 318 8836</p>
   </div>
 </header>
-  <nav>
-    <button onclick="showTab('create')">Create Invoice</button>
-    <button onclick="showTab('history')">History</button>
-  </nav>
+<nav>
+  <button onclick="showTab('create')">Create Invoice</button>
+  <button onclick="showTab('history')">History</button>
+  <button onclick="showTab('suppliers')">Suppliers</button>
+  <button onclick="showTab('debtors')">Debtors</button>
+  <button onclick="showTab('creditors')">Creditors</button>
+</nav>
+<section id="suppliers" class="tab hidden">
+  <h2>Suppliers</h2>
+  <form id="supplierForm">
+    <input placeholder="Supplier Name" id="sName" required />
+    <input placeholder="Contact" id="sContact" />
+    <input placeholder="Supplies" id="sItems" />
+    <button type="submit">Add Supplier</button>
+  </form>
+  <div id="supplierList"></div>
+</section>
+
+<section id="debtors" class="tab hidden">
+  <h2>Debtors</h2>
+  <form id="debtorForm">
+    <input placeholder="Client Name" id="dClient" required />
+    <input placeholder="Vehicle" id="dVehicle" />
+    <input placeholder="Amount Owed (R)" id="dAmount" type="number" required />
+    <button type="submit">Add Debtor</button>
+  </form>
+  <div id="debtorList"></div>
+</section>
+
+<section id="creditors" class="tab hidden">
+  <h2>Creditors</h2>
+  <form id="creditorForm">
+    <input placeholder="Owed To" id="cTo" required />
+    <input placeholder="Purpose (e.g. Parts)" id="cReason" />
+    <input placeholder="Amount (R)" id="cAmount" type="number" required />
+    <button type="submit">Add Creditor</button>
+  </form>
+  <div id="creditorList"></div>
+</section>
 
   <main>
     <section id="create" class="tab">
