@@ -132,18 +132,21 @@ form button:hover, form button:focus {
 .list-item:last-child {
   border-bottom: none;
 }
+/* Make the delete button lighter and less prominent */
 .list-item button {
   background: transparent;
   border: none;
-  color: #e53e3e;
+  color: #bbb;
   font-size: 1.1rem;
   cursor: pointer;
   border-radius: 4px;
   padding: 0.1rem 0.5rem;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
-.list-item button:hover {
+.list-item button:hover,
+.list-item button:focus {
   background: #ffe2e2;
+  color: #e53e3e;
 }
 
 .total, #pettyBalance, #posTotal {
