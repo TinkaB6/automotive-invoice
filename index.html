@@ -1,31 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Repair Invoice App</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Automotive Invoice System</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Automotive Repair Invoicing</h1>
+  <header>
+    <img src="logo.png" alt="Company Logo" id="logo"/>
+    <div id="company-info">
+      <h1>Your Auto Repair Shop</h1>
+      <p>123 Main Rd, Cape Town</p>
+      <p>Tel: 012 345 6789 | Email: info@autorepair.com</p>
+    </div>
+  </header>
+  <nav>
+    <button onclick="showTab('create')">Create Invoice</button>
+    <button onclick="showTab('history')">History</button>
+  </nav>
 
-  <section>
-    <h2>Add Repair Item</h2>
-    <form id="repairForm">
-      <input type="text" id="vehicle" placeholder="Vehicle (e.g. Toyota)" required />
-      <input type="text" id="item" placeholder="Repair Item (e.g. Brake Pads)" required />
-      <input type="text" id="supplier" placeholder="Supplier (e.g. JustBrakes)" required />
-      <input type="number" id="cost" placeholder="Cost to You (e.g. 500)" required />
-      <input type="number" id="charge" placeholder="Charge to Client (e.g. 1000)" required />
-      <button type="submit">Add</button>
-    </form>
-  </section>
+  <main>
+    <section id="create" class="tab">
+      <h2>New Invoice</h2>
+      <form id="invoiceForm">
+        <label>Vehicle: <input id="vehicle" required></label>
+        <label>Item: <input id="item" required></label>
+        <label>Supplier: <input id="supplier"></label>
+        <label>Supplier Cost (R): <input id="cost" type="number"></label>
+        <label>Charge to Client (R): <input id="charge" type="number" required></label>
+        <button type="submit">Add Line</button>
+      </form>
+      <div id="invoicePreview"></div>
+      <button id="saveInvoiceBtn" onclick="saveInvoice()" disabled>Save Invoice</button>
+    </section>
 
-  <section>
-    <h2>Client Invoice Preview</h2>
-    <div id="invoiceDisplay"></div>
-    <button onclick="exportInvoice()">Export Invoice</button>
-  </section>
+    <section id="history" class="tab hidden">
+      <h2>Invoice History</h2>
+      <div id="historyList"></div>
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>
