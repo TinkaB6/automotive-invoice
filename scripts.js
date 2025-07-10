@@ -1,11 +1,8 @@
 // --- Utilities --- //
-function saveData(key, arr) {
-  localStorage.setItem(key, JSON.stringify(arr));
-}
-function loadData(key) {
-  return JSON.parse(localStorage.getItem(key) || "[]");
-}
+function saveData(key, arr) { localStorage.setItem(key, JSON.stringify(arr)); }
+function loadData(key) { return JSON.parse(localStorage.getItem(key) || "[]"); }
 function uid() { return '_' + Math.random().toString(36).substr(2, 9); }
+function formatMoney(n) { return "R " + (+n).toFixed(2); }
 
 // --- Modal --- //
 function showModal(html, onclose) {
@@ -28,73 +25,204 @@ document.addEventListener("DOMContentLoaded", () => {
     tabBtn.addEventListener('click', () => {
       document.querySelectorAll('.ribbon-tabs button').forEach(b => b.classList.remove('active'));
       tabBtn.classList.add('active');
-      let group = tabBtn.dataset.tab;
-      document.querySelectorAll('.ribbon-actions-group').forEach(g => {
-        if(g.dataset.group === group) g.classList.add('active');
-        else g.classList.remove('active');
-      });
-      showWelcome();
+      showModule(tabBtn.dataset.tab);
     });
   });
-  document.querySelectorAll('.ribbon-btn').forEach(actionBtn => {
-    actionBtn.addEventListener('click', () => showModule(actionBtn.dataset.action));
-  });
-  showWelcome();
+  showModule("invoices");
 });
 
-// --- Welcome Screen --- //
-function showWelcome() {
-  document.getElementById('workspace').innerHTML = `
-    <h2>Welcome to Auto Repair Invoicing Suite</h2>
-    <p>Select a module above to get started.<br>
-    <small>All data is stored in your browser and can be exported/imported via Backup/Restore.</small></p>
-  `;
-}
-
 // --- Main Router --- //
-function showModule(action) {
-  switch(action) {
-    // Processing
-    case "job-cards":        return showJobCards();
-    case "invoices":         return showInvoices();
-    case "quotes":           return showQuotes();
-    case "purchase-orders":  return showPurchaseOrders();
-    case "goods-receiving":  return showGoodsReceiving();
-    case "credit-notes":     return showCreditNotes();
-    case "return-to-suppliers": return showReturnToSuppliers();
-    // Debtors
-    case "customers":        return showCustomers();
-    case "vehicles":         return showVehicles();
-    case "debtors-list":     return showDebtorsList();
-    case "debtors-receipts": return showDebtorReceipts();
-    // Creditors
-    case "suppliers":        return showSuppliers();
-    case "creditors-list":   return showCreditorsList();
-    case "creditors-payments": return showCreditorPayments();
-    // Stock
-    case "products":         return showProducts();
-    case "stock-movement":   return showStockMovement();
-    case "stock-adjustment": return showStockAdjustments();
-    case "stock-alerts":     return showStockAlerts();
-    // POS
-    case "new-sale":         return showPOS();
-    case "sales-history":    return showSalesHistory();
-    case "refunds":          return showRefunds();
-    case "cash-drawer":      return showCashDrawer();
-    // Reports
-    case "financial-reports": return showFinancialReports();
-    case "stock-reports":    return showStockReports();
-    case "jobcard-reports":  return showJobcardReports();
-    case "debtor-reports":   return showDebtorReports();
-    // Settings
-    case "users":            return showUsers();
-    case "company":          return showCompany();
-    case "backup":           return showBackup();
-    default:                 return showWelcome();
+function showModule(tab) {
+  switch(tab) {
+    case "invoices": return showInvoices();
+    case "customers": return showCustomers();
+    case "vehicles": return showVehicles();
+    default: return showInvoices();
   }
 }
 
-// --- Example: Customers (Debtors) --- //
+// ------------ INVOICES MODULE ------------ //
+function showInvoices() {
+  let ws = document.getElementById('workspace');
+  let invoices = loadData("invoices");
+  let customers = loadData("customers");
+  ws.innerHTML = `
+    <h2>Invoices</h2>
+    <button onclick="addInvoice()">Add Invoice</button>
+    <input id="invsearch" placeholder="Search..." style="float:right;margin-bottom:1em;">
+    <table class="table-list"><thead>
+      <tr><th>#</th><th>Date</th><th>Customer</th><th>Vehicle</th><th>Total</th><th>Actions</th></tr>
+    </thead><tbody>${
+      invoices.map((inv,i)=>`<tr>
+        <td>${inv.number}</td>
+        <td>${inv.date}</td>
+        <td>${inv.customerName||""}</td>
+        <td>${inv.vehicleReg||""}</td>
+        <td>${formatMoney(invTotal(inv))}</td>
+        <td>
+          <button class="action-btn" onclick="editInvoice('${inv.id}')">Edit</button>
+          <button class="action-btn" onclick="deleteInvoice('${inv.id}')">Delete</button>
+          <button class="action-btn" onclick="printInvoicePDF('${inv.id}')">Print</button>
+        </td>
+      </tr>`).join("")
+    }</tbody></table>
+  `;
+  ws.querySelector("#invsearch").oninput = function() {
+    let val = this.value.toLowerCase();
+    ws.querySelectorAll("tbody tr").forEach(tr => {
+      let txt = tr.textContent.toLowerCase();
+      tr.style.display = txt.includes(val) ? "" : "none";
+    });
+  };
+}
+function invTotal(inv) {
+  return (inv.lines||[]).reduce((s,l)=>
+    s + (parseFloat(l.qty||0) * parseFloat(l.sale||0)) * (1-parseFloat(l.discount||0)/100) * (1+parseFloat(l.tax||0)/100)
+  ,0);
+}
+window.addInvoice = function() { invoiceForm(); };
+window.editInvoice = function(id) {
+  let inv = loadData("invoices").find(i=>i.id===id);
+  invoiceForm(inv);
+};
+window.deleteInvoice = function(id) {
+  if(!confirm("Delete invoice?")) return;
+  let arr = loadData("invoices");
+  arr = arr.filter(x=>x.id!==id); saveData("invoices",arr); showInvoices();
+};
+function invoiceForm(inv) {
+  let customers = loadData("customers");
+  let vehicles = [];
+  let vehicleSelectHtml = '';
+  if (inv && inv.customerId) {
+    let c = customers.find(c=>c.id===inv.customerId);
+    vehicles = (c && c.vehicles) ? c.vehicles : [];
+  }
+  showModal(`
+    <h3>${inv?"Edit":"New"} Invoice</h3>
+    <form id="invf">
+      <label>Date</label><input name="date" type="date" required value="${inv?inv.date:(new Date).toISOString().slice(0,10)}">
+      <label>Invoice #</label><input name="number" required value="${inv?inv.number:""}">
+      <label>Customer</label>
+      <select name="customerId" required>
+        <option value="">-- Select Customer --</option>
+        ${customers.map(c=>`<option value="${c.id}"${inv&&inv.customerId==c.id?" selected":""}>${c.name}</option>`).join("")}
+      </select>
+      <button type="button" onclick="addCustomerFromInv()">+ New Customer</button>
+      <label>Vehicle</label>
+      <select name="vehicleReg" id="vehselect">
+        <option value="">-- Select Vehicle --</option>
+        ${(vehicles||[]).map(v=>`<option value="${v.reg}"${inv&&inv.vehicleReg==v.reg?" selected":""}>${v.reg} (${v.make||""} ${v.model||""})</option>`).join("")}
+      </select>
+      <button type="button" onclick="addVehicleFromInv()">+ New Vehicle</button>
+      <div id="linesarea"></div>
+      <button type="button" onclick="addInvLine()">+ Add Line</button>
+      <br>
+      <button type="submit">Save</button>
+    </form>
+    <style>
+      #linesarea table {margin:0.5em 0;}
+      #linesarea input {width:90px;}
+    </style>
+  `, ()=>{showInvoices();});
+  let lines = inv && inv.lines ? JSON.parse(JSON.stringify(inv.lines)) : [];
+  renderLines();
+  document.getElementById("invf").customerId.onchange = function() {
+    let c = customers.find(c=>c.id==this.value);
+    vehicles = c && c.vehicles ? c.vehicles : [];
+    let vehsel = document.getElementById("vehselect");
+    vehsel.innerHTML = `<option value="">-- Select Vehicle --</option>` +
+      vehicles.map(v=>`<option value="${v.reg}">${v.reg} (${v.make||""} ${v.model||""})</option>`).join("");
+  };
+  function renderLines() {
+    document.getElementById("linesarea").innerHTML = lines.length ?
+    `<table class="table-list"><tr>
+      <th>Description</th><th>Qty</th><th>Cost</th><th>Sale</th><th>Discount %</th><th>Tax %</th><th>Total</th><th>Remove</th>
+    </tr>${
+      lines.map((l,i)=>`<tr>
+        <td><input value="${l.desc||""}" onchange="invLineEdit(${i},'desc',this.value)"></td>
+        <td><input type="number" min="1" value="${l.qty||1}" onchange="invLineEdit(${i},'qty',this.value)"></td>
+        <td><input type="number" min="0" step="0.01" value="${l.cost||0}" onchange="invLineEdit(${i},'cost',this.value)"></td>
+        <td><input type="number" min="0" step="0.01" value="${l.sale||0}" onchange="invLineEdit(${i},'sale',this.value)"></td>
+        <td><input type="number" min="0" max="100" step="0.01" value="${l.discount||0}" onchange="invLineEdit(${i},'discount',this.value)"></td>
+        <td><input type="number" min="0" max="100" step="0.01" value="${l.tax||0}" onchange="invLineEdit(${i},'tax',this.value)"></td>
+        <td>${formatMoney((l.qty||1)*(l.sale||0)*(1-(l.discount||0)/100)*(1+(l.tax||0)/100))}</td>
+        <td><button type="button" onclick="invLineDelete(${i})">X</button></td>
+      </tr>`).join("")
+    }</table>` : `<em>No lines yet</em>`;
+  }
+  window.addInvLine = function() {
+    lines.push({desc:'',qty:1,cost:0,sale:0,discount:0,tax:0});
+    renderLines();
+  };
+  window.invLineEdit = function(idx,field,val) {
+    lines[idx][field] = val;
+    renderLines();
+  };
+  window.invLineDelete = function(idx) {
+    lines.splice(idx,1);
+    renderLines();
+  };
+  document.getElementById("invf").onsubmit = function(e) {
+    e.preventDefault();
+    if(!lines.length) return alert("Add at least one line!");
+    let arr = loadData("invoices");
+    let c = customers.find(c=>c.id==this.customerId.value);
+    let obj = {
+      id: inv?inv.id:uid(),
+      date: this.date.value,
+      number: this.number.value,
+      customerId: this.customerId.value,
+      customerName: c ? c.name : "",
+      vehicleReg: this.vehicleReg.value,
+      lines: JSON.parse(JSON.stringify(lines))
+    };
+    if(inv) {
+      let idx = arr.findIndex(x=>x.id===inv.id);
+      arr[idx] = obj;
+    } else arr.push(obj);
+    saveData("invoices",arr); hideModal(); showInvoices();
+  };
+}
+window.printInvoicePDF = function(id) {
+  let inv = loadData("invoices").find(i=>i.id===id);
+  if(!inv) return;
+  let { jsPDF } = window.jspdf;
+  let pdf = new jsPDF();
+  pdf.setFontSize(16);
+  pdf.text(`INVOICE #${inv.number}`, 15, 15);
+  pdf.setFontSize(12);
+  pdf.text(`Date: ${inv.date}`, 15, 25);
+  pdf.text(`Customer: ${inv.customerName||""}`, 15, 35);
+  pdf.text(`Vehicle: ${inv.vehicleReg||""}`, 15, 45);
+  let y = 55;
+  pdf.setFontSize(11);
+  pdf.text("Description", 15, y);
+  pdf.text("Qty", 90, y);
+  pdf.text("Cost", 105, y);
+  pdf.text("Sale", 125, y);
+  pdf.text("Disc%", 145, y);
+  pdf.text("Tax%", 160, y);
+  pdf.text("Total", 180, y);
+  y += 7;
+  inv.lines.forEach(l=>{
+    pdf.text(String(l.desc||""), 15, y);
+    pdf.text(String(l.qty||""), 90, y);
+    pdf.text(String(l.cost||""), 105, y);
+    pdf.text(String(l.sale||""), 125, y);
+    pdf.text(String(l.discount||""), 145, y);
+    pdf.text(String(l.tax||""), 160, y);
+    let lineTotal = (l.qty||1)*(l.sale||0)*(1-(l.discount||0)/100)*(1+(l.tax||0)/100);
+    pdf.text(formatMoney(lineTotal), 180, y, {align:"right"});
+    y+=7;
+    if(y>270) { pdf.addPage(); y=20; }
+  });
+  y+=7;
+  pdf.setFontSize(14); pdf.text(`TOTAL: ${formatMoney(invTotal(inv))}`, 155, y);
+  pdf.save(`invoice-${inv.number}.pdf`);
+};
+
+// ------------ CUSTOMERS & VEHICLES (minimal, for invoices) ------------ //
 function showCustomers() {
   let ws = document.getElementById('workspace');
   let data = loadData("customers");
@@ -170,8 +298,26 @@ window.deleteCustomer = function(id) {
     arr = arr.filter(x=>x.id!==id); saveData("customers",arr); showCustomers();
   }
 };
+window.addCustomerFromInv = function() {
+  showModal(`
+    <h3>Add Customer</h3>
+    <form id="custf">
+      <label>Name</label><input name="name" required>
+      <label>Telephone</label><input name="phone">
+      <label>Email</label><input name="email" type="email">
+      <label>Address</label><input name="address">
+      <button type="submit">Save</button>
+    </form>
+  `, () => invoiceForm());
+  document.getElementById("custf").onsubmit = function(e) {
+    e.preventDefault();
+    let arr = loadData("customers");
+    let obj = {id:uid(), name:this.name.value, phone:this.phone.value, email:this.email.value, address:this.address.value, vehicles:[]};
+    arr.push(obj); saveData("customers",arr); hideModal(); invoiceForm();
+  };
+};
 
-// --- Vehicles (linked to Customers) --- //
+// Vehicles
 function showVehicles() {
   let ws = document.getElementById('workspace');
   let customers = loadData("customers");
@@ -260,38 +406,29 @@ window.deleteVehicle = function(reg) {
   customers.forEach(c=>{c.vehicles = (c.vehicles||[]).filter(vv=>vv.reg!==reg)});
   saveData("customers",customers); showVehicles();
 };
-
-
-// ---- For brevity, all other modules follow this pattern: table + modals for add/edit/print, per your screenshots and auto repair needs.
-// ---- The implementation for Invoices, Quotes, Job Cards, Purchase Orders, POS, Parts, etc. is similar: 
-// - Each record is a document with header fields and line items (parts, labor, etc).
-// - Each line is editable (qty, cost, sale, discount, tax).
-// - Each module supports CRUD, search, and print/export via modal or inline table.
-// - Data is always stored in localStorage.
-
-// -- To keep this answer readable, let me know which module you want next in fully detailed code (Invoices, Job Cards, POS, etc)
-// -- Or download the above as a starting point (it is a full, scalable SPA).
-
-// --- Print/Export Example for PDF (for invoices/quotes/POS/PO/jobcards) ---
-// Uses jsPDF, already included in index.html
-window.printDocPDF = function(type, id) {
-  let doc;
-  switch(type) {
-    case "invoice": doc = loadData("invoices").find(i=>i.id===id); break;
-    case "jobcard": doc = loadData("jobcards").find(i=>i.id===id); break;
-    // ...add others
-    default: return;
-  }
-  if (!doc) return;
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
-  pdf.text(`${type.toUpperCase()} #${doc.number||id}`, 15, 15);
-  pdf.text(`Customer: ${doc.customer||""}`, 15, 25);
-  pdf.text(`Date: ${doc.date||""}`, 15, 35);
-  let y = 45;
-  doc.lines.forEach(l => {
-    pdf.text(`${l.qty} x ${l.desc} @ ${l.price} (${l.cost ? "Cost: " + l.cost : ""})`, 15, y);
-    y += 8;
-  });
-  pdf.save(`${type}-${doc.number||id}.pdf`);
+window.addVehicleFromInv = function() {
+  let customers = loadData("customers");
+  let cidx = document.getElementById("invf").customerId.value;
+  if(!cidx) return alert("Please select a customer first");
+  let custIndex = customers.findIndex(c=>c.id==cidx);
+  showModal(`
+    <h3>Add Vehicle</h3>
+    <form id="vehf">
+      <label>Owner</label>
+      <input value="${customers[custIndex].name}" disabled><input type="hidden" name="owner" value="${custIndex}">
+      <label>Reg #</label><input name="reg" required>
+      <label>Make</label><input name="make" required>
+      <label>Model</label><input name="model">
+      <label>VIN</label><input name="vin">
+      <label>Color</label><input name="color">
+      <button type="submit">Save</button>
+    </form>
+  `, ()=> invoiceForm());
+  document.getElementById("vehf").onsubmit = function(e) {
+    e.preventDefault();
+    let cidx = +this.owner.value, customers = loadData("customers");
+    let v = {reg:this.reg.value, make:this.make.value, model:this.model.value, vin:this.vin.value, color:this.color.value};
+    customers[cidx].vehicles = customers[cidx].vehicles||[]; customers[cidx].vehicles.push(v);
+    saveData("customers",customers); hideModal(); invoiceForm();
+  };
 };
