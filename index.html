@@ -4,9 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Repair Invoice App</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Welcome to Your Automotive Invoicing App</h1>
-  <p>This page is live! Next we'll add the full app.</p>
+  <h1>Automotive Repair Invoicing</h1>
+
+  <section>
+    <h2>Add Repair Item</h2>
+    <form id="repairForm">
+      <input type="text" id="vehicle" placeholder="Vehicle (e.g. Toyota)" required />
+      <input type="text" id="item" placeholder="Repair Item (e.g. Brake Pads)" required />
+      <input type="text" id="supplier" placeholder="Supplier (e.g. JustBrakes)" required />
+      <input type="number" id="cost" placeholder="Cost to You (e.g. 500)" required />
+      <input type="number" id="charge" placeholder="Charge to Client (e.g. 1000)" required />
+      <button type="submit">Add</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Client Invoice Preview</h2>
+    <div id="invoiceDisplay"></div>
+    <button onclick="exportInvoice()">Export Invoice</button>
+  </section>
+
+  <script src="script.js"></script>
 </body>
 </html>
