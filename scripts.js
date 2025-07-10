@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     sections.forEach(sec => sec.classList.remove("active"));
     const tabSection = document.getElementById(id);
     if (tabSection) tabSection.classList.add("active");
+    // Store the active tab in localStorage
+    localStorage.setItem("activeTab", id);
   }
 
   tabs.forEach(tab => {
@@ -15,8 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Default view
-  showTab("create");
+  // Restore the last active tab, or default to "create"
+  const lastTab = localStorage.getItem("activeTab") || "create";
+  showTab(lastTab);
   renderAll();
 });
 
