@@ -84,3 +84,80 @@ function viewInvoice(id){
   html += `<div class="total">Total: R${tot.toFixed(2)}</div>`;
   historyList.innerHTML = html;
 }
+// === SUPPLIERS ===
+supplierForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const all = JSON.parse(localStorage.getItem('suppliers')||'[]');
+  all.push({name: sName.value, contact: sContact.value, items: sItems.value});
+  localStorage.setItem('suppliers', JSON.stringify(all));
+  supplierForm.reset();
+  renderSuppliers();
+});
+
+function renderSuppliers(){
+  const list = JSON.parse(localStorage.getItem('suppliers')||'[]');
+  supplierList.innerHTML = list.map((s, i) => `
+    <div><strong>${s.name}</strong> – ${s.contact} (${s.items})
+    <button onclick="deleteSupplier(${i})">🗑️</button></div>`).join('');
+}
+function deleteSupplier(i){
+  const list = JSON.parse(localStorage.getItem('suppliers')||'[]');
+  list.splice(i,1);
+  localStorage.setItem('suppliers', JSON.stringify(list));
+  renderSuppliers();
+}
+
+// === DEBTORS ===
+debtorForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const all = JSON.parse(localStorage.getItem('debtors')||'[]');
+  all.push({client: dClient.value, vehicle: dVehicle.value, amount: +dAmount.value});
+  localStorage.setItem('debtors', JSON.stringify(all));
+  debtorForm.reset();
+  renderDebtors();
+});
+
+function renderDebtors(){
+  const list = JSON.parse(localStorage.getItem('debtors')||'[]');
+  debtorList.innerHTML = list.map((d, i) => `
+    <div><strong>${d.client}</strong> – ${d.vehicle} – R${d.amount.toFixed(2)}
+    <button onclick="deleteDebtor(${i})">🗑️</button></div>`).join('');
+}
+function deleteDebtor(i){
+  const list = JSON.parse(localStorage.getItem('debtors')||'[]');
+  list.splice(i,1);
+  localStorage.setItem('debtors', JSON.stringify(list));
+  renderDebtors();
+}
+
+// === CREDITORS ===
+creditorForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const all = JSON.parse(localStorage.getItem('creditors')||'[]');
+  all.push({to: cTo.value, reason: cReason.value, amount: +cAmount.value});
+  localStorage.setItem('creditors', JSON.stringify(all));
+  creditorForm.reset();
+  renderCreditors();
+});
+
+function renderCreditors(){
+  const list = JSON.parse(localStorage.getItem('creditors')||'[]');
+  creditorList.innerHTML = list.map((c, i) => `
+    <div><strong>${c.to}</strong> – ${c.reason} – R${c.amount.toFixed(2)}
+    <button onclick="deleteCreditor(${i})">🗑️</button></div>`).join('');
+}
+function deleteCreditor(i){
+  const list = JSON.parse(localStorage.getItem('creditors')||'[]');
+  list.splice(i,1);
+  localStorage.setItem('creditors', JSON.stringify(list));
+  renderCreditors();
+}
+
+// Initialize on tab open
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    renderSuppliers();
+    renderDebtors();
+    renderCreditors();
+  });
+});
