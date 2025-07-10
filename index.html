@@ -4,8 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Automotive Invoice</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="scripts.js"></script>
+  <link rel="styleheet" href="style.css">
+  <script src="scripts.js" defer></script>
 </head>
 <body>
   <header>
@@ -20,91 +20,106 @@
       <button data-tab="reports">Reports</button>
     </nav>
   </header>
-
   <main>
+    <!-- Create Invoice Tab -->
     <section id="create" class="tab-content">
       <h2>Create Invoice</h2>
       <form id="invoiceForm">
-        <label>Company</label><input id="companyName" required>
-        <label>Invoice #</label><input id="invoiceNumber" required>
-        <label>Client</label><input id="clientName" required>
-        <label>Amount (R)</label><input id="invoiceAmount" type="number" required>
+        <label>Company</label>
+        <input name="companyName" required>
+        <label>Invoice #</label>
+        <input name="invoiceNumber" required>
+        <label>Client</label>
+        <input name="clientName" required>
+        <label>Amount (R)</label>
+        <input name="invoiceAmount" type="number" step="0.01" required>
         <button type="submit">Add Invoice</button>
       </form>
       <div id="invoiceList"></div>
     </section>
-
-    <!-- Add similar structure for each section below -->
-
+    <!-- Suppliers Tab -->
     <section id="suppliers" class="tab-content">
       <h2>Suppliers</h2>
       <form id="supplierForm">
-        <label>Name</label><input id="sName" required>
-        <label>Contact</label><input id="sContact" required>
-        <label>Items</label><input id="sItems" required>
+        <label>Name</label>
+        <input name="sName" required>
+        <label>Contact</label>
+        <input name="sContact" required>
+        <label>Items</label>
+        <input name="sItems" required>
         <button type="submit">Add Supplier</button>
       </form>
       <div id="supplierList"></div>
     </section>
-
+    <!-- Debtors Tab -->
     <section id="debtors" class="tab-content">
       <h2>Debtors</h2>
       <form id="debtorForm">
-        <label>Client</label><input id="dClient" required>
-        <label>Vehicle</label><input id="dVehicle" required>
-        <label>Amount</label><input id="dAmount" type="number" required>
+        <label>Client</label>
+        <input name="dClient" required>
+        <label>Vehicle</label>
+        <input name="dVehicle" required>
+        <label>Amount</label>
+        <input name="dAmount" type="number" step="0.01" required>
         <button type="submit">Add Debtor</button>
       </form>
       <div id="debtorList"></div>
     </section>
-
+    <!-- Creditors Tab -->
     <section id="creditors" class="tab-content">
       <h2>Creditors</h2>
       <form id="creditorForm">
-        <label>To</label><input id="cTo" required>
-        <label>Reason</label><input id="cReason" required>
-        <label>Amount</label><input id="cAmount" type="number" required>
+        <label>To</label>
+        <input name="cTo" required>
+        <label>Reason</label>
+        <input name="cReason" required>
+        <label>Amount</label>
+        <input name="cAmount" type="number" step="0.01" required>
         <button type="submit">Add Creditor</button>
       </form>
       <div id="creditorList"></div>
     </section>
-
+    <!-- Stock Tab -->
     <section id="stock" class="tab-content">
       <h2>Stock Management</h2>
       <form id="stockForm">
-        <label>Name</label><input id="stockName" required>
-        <label>Quantity</label><input id="stockQty" type="number" required>
-        <label>Cost</label><input id="stockCost" type="number" required>
-        <label>Selling Price</label><input id="stockSell" type="number" required>
+        <label>Name</label>
+        <input name="stockName" required>
+        <label>Quantity</label>
+        <input name="stockQty" type="number" min="1" required>
+        <label>Cost</label>
+        <input name="stockCost" type="number" step="0.01" required>
+        <label>Selling Price</label>
+        <input name="stockSell" type="number" step="0.01" required>
         <button type="submit">Add/Update Stock</button>
       </form>
       <div id="stockList"></div>
     </section>
-
+    <!-- POS Tab -->
     <section id="pos" class="tab-content">
-      <h2>Point of Sale</h2>
+      <h2>Point of Sale (POS)</h2>
       <div id="posItems"></div>
       <div class="total">Total: R<span id="posTotal">0.00</span></div>
-      <button onclick="completeSale()">Complete Sale</button>
+      <button type="button" id="completeSaleBtn">Complete Sale</button>
     </section>
-
+    <!-- Petty Cash Tab -->
     <section id="petty" class="tab-content">
       <h2>Petty Cash</h2>
       <form id="pettyForm">
-        <label>Description</label><input id="pettyDesc" required>
-        <label>Amount</label><input id="pettyAmount" type="number" required>
-        <button type="submit">Add Entry</button>
+        <label>Description</label>
+        <input name="pettyDesc" required>
+        <label>Amount</label>
+        <input name="pettyAmount" type="number" step="0.01" required>
+        <button type="submit">Add</button>
       </form>
       <div class="total">Balance: R<span id="pettyBalance">0.00</span></div>
       <div id="pettyList"></div>
     </section>
-
+    <!-- Reports Tab -->
     <section id="reports" class="tab-content">
-      <h2>Daily Sales Report</h2>
+      <h2>Daily Sales Reports</h2>
       <div id="reportList"></div>
     </section>
   </main>
-
-  <script src="scripts.js"></script>
 </body>
 </html>
