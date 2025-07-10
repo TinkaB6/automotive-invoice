@@ -1,96 +1,15 @@
-let currentLines = [];
-showTab('create');
-
-function showTab(tab) {
-document.querySelectorAll('button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    renderSuppliers();
-    renderDebtors();
-    renderCreditors();
-    renderStock();
-  });
-});
-
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
 }
 
-document.getElementById('invoiceForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const v = vehicle.value, i = item.value, s = supplier.value, cst = +cost.value||0, ch = +charge.value;
-  currentLines.push({v,i,s,cst,ch});
-  invoiceForm.reset();
-  renderPreview();
-  saveInvoiceBtn.disabled = false;
-});
-
-function renderPreview(){
-  const c = currentLines;
-  let html = '', total = 0;
-  lines = currentLines.forEach((l, idx)=>{
-    total += l.ch;
-    html += `<div class="invoice-row">
-      <div>${l.v} – ${l.i}</div>
-      <div>R${l.ch.toFixed(2)}</div>
-      <div><button onclick="removeLine(${idx})">🗑️</button></div>
-    </div>`;
-  });
-  html += `<div class="total">Total: R${total.toFixed(2)}</div>`;
-  invoicePreview.innerHTML = html;
-}
-
-function removeLine(idx){
-  currentLines.splice(idx,1);
-  renderPreview();
-  saveInvoiceBtn.disabled = currentLines.length === 0;
-}
-
-function saveInvoice(){
-  const inv = {
-    id: Date.now(),
-    date: new Date().toLocaleDateString(),
-    lines: currentLines.slice()
-  };
-  const all = JSON.parse(localStorage.getItem('invoices')||'[]');
-  all.push(inv);
-  localStorage.setItem('invoices', JSON.stringify(all));
-  currentLines = [];
-  renderPreview();
-  saveInvoiceBtn.disabled = true;
-  alert('Invoice Saved! 🎉');
-}
-
-function renderHistory(){
-  const all = JSON.parse(localStorage.getItem('invoices')||'[]');
-  if(all.length === 0) { historyList.innerHTML = '<p>No invoices saved yet.</p>'; return; }
-  historyList.innerHTML = all.map(inv => {
-    const sum = inv.lines.reduce((a,l)=>a+l.ch,0);
-    return `<div class="history-item">
-      <button class="nav-btn" onclick="deleteInv(${inv.id})">Delete</button>
-      <strong>Invoice #${inv.id}</strong> | ${inv.date} | Total: R${sum.toFixed(2)}
-      <button onclick="viewInvoice(${inv.id})">View</button>
-    </div>`;
-  }).join('');
-}
-
-function deleteInv(id){
-  let all = JSON.parse(localStorage.getItem('invoices')||'[]');
-  all = all.filter(inv => inv.id !== id);
-  localStorage.setItem('invoices', JSON.stringify(all));
-  renderHistory();
-}
-
-function viewInvoice(id){
-  const inv = JSON.parse(localStorage.getItem('invoices')||'[]').find(x=>x.id===id);
-  if(!inv) return;
-  let html = `<h3>Invoice #${inv.id} (${inv.date})</h3>`;
-  let tot = 0;
-  inv.lines.forEach(l=>{
-    tot += l.ch;
-    html += `<div class="invoice-row"><div>${l.v}–${l.i}</div><div>R${l.ch.toFixed(2)}</div></div>`;
-  });
-  html += `<div class="total">Total: R${tot.toFixed(2)}</div>`;
-  historyList.innerHTML = html;
-}
 // === SUPPLIERS ===
+const supplierForm = document.getElementById('supplierForm');
+const sName = document.getElementById('sName');
+const sContact = document.getElementById('sContact');
+const sItems = document.getElementById('sItems');
+const supplierList = document.getElementById('supplierList');
+
 supplierForm.addEventListener('submit', e => {
   e.preventDefault();
   const all = JSON.parse(localStorage.getItem('suppliers')||'[]');
@@ -114,6 +33,12 @@ function deleteSupplier(i){
 }
 
 // === DEBTORS ===
+const debtorForm = document.getElementById('debtorForm');
+const dClient = document.getElementById('dClient');
+const dVehicle = document.getElementById('dVehicle');
+const dAmount = document.getElementById('dAmount');
+const debtorList = document.getElementById('debtorList');
+
 debtorForm.addEventListener('submit', e => {
   e.preventDefault();
   const all = JSON.parse(localStorage.getItem('debtors')||'[]');
@@ -137,6 +62,12 @@ function deleteDebtor(i){
 }
 
 // === CREDITORS ===
+const creditorForm = document.getElementById('creditorForm');
+const cTo = document.getElementById('cTo');
+const cReason = document.getElementById('cReason');
+const cAmount = document.getElementById('cAmount');
+const creditorList = document.getElementById('creditorList');
+
 creditorForm.addEventListener('submit', e => {
   e.preventDefault();
   const all = JSON.parse(localStorage.getItem('creditors')||'[]');
@@ -159,14 +90,6 @@ function deleteCreditor(i){
   renderCreditors();
 }
 
-// Initialize on tab open
-document.querySelectorAll('button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    renderSuppliers();
-    renderDebtors();
-    renderCreditors();
-  });
-});
 // === STOCK ===
 const stockForm = document.getElementById('stockForm');
 const stockName = document.getElementById('stockName');
@@ -208,3 +131,62 @@ function deleteStock(i){
   localStorage.setItem('stock', JSON.stringify(list));
   renderStock();
 }
+
+// === POS ===
+let posCart = [];
+
+function renderPOS(){
+  const stock = JSON.parse(localStorage.getItem('stock')||'[]');
+  const posItems = document.getElementById('posItems');
+  posItems.innerHTML = stock.map((item,i)=>`
+    <div>
+      <strong>${item.name}</strong> – ${item.quantity} available @ R${item.sell.toFixed(2)}
+      <button onclick="addToCart(${i})">Add</button>
+    </div>
+  `).join('');
+  updatePOSTotal();
+}
+
+function addToCart(index){
+  const stock = JSON.parse(localStorage.getItem('stock')||'[]');
+  const item = stock[index];
+  if(item.quantity <= 0){
+    alert("Out of stock!");
+    return;
+  }
+  const cartIndex = posCart.findIndex(c => c.name === item.name);
+  if(cartIndex >= 0){
+    posCart[cartIndex].qty += 1;
+  } else {
+    posCart.push({ name: item.name, price: item.sell, qty: 1 });
+  }
+  stock[index].quantity -=1;
+  localStorage.setItem('stock', JSON.stringify(stock));
+  renderPOS();
+}
+
+function updatePOSTotal(){
+  const total = posCart.reduce((sum, item)=> sum + item.price * item.qty, 0);
+  document.getElementById('posTotal').textContent = total.toFixed(2);
+}
+
+function completeSale(){
+  if(posCart.length === 0){
+    alert("Cart is empty!");
+    return;
+  }
+  alert("Sale completed. Total: R" + document.getElementById('posTotal').textContent);
+  posCart = [];
+  renderPOS();
+}
+
+// === INIT ALL ON TAB OPEN ===
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    renderSuppliers();
+    renderDebtors();
+    renderCreditors();
+    renderStock();
+    renderPOS();
+  });
+});
