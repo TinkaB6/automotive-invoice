@@ -2,9 +2,15 @@ let currentLines = [];
 showTab('create');
 
 function showTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
-  document.getElementById(tab).classList.remove('hidden');
-  if(tab === 'history') renderHistory();
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    renderSuppliers();
+    renderDebtors();
+    renderCreditors();
+    renderStock();
+  });
+});
+
 }
 
 document.getElementById('invoiceForm').addEventListener('submit', e => {
