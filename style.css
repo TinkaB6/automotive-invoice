@@ -1,163 +1,153 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Business Dashboard</title>
-  <style>
-    /* — Sage-Inspired Color Palette & Typography */
-    :root {
-      --bg: #f5f5f5;
-      --card: #ffffff;
-      --primary: #2d6a4f;
-      --accent: #95d5b2;
-      --text: #333;
-      --radius: 6px;
-      --gap: 1rem;
-      --transition: 0.2s;
-    }
+:root {
+  --bg: #f4f7f6;
+  --card: #fff;
+  --primary: #2c7a7b;
+  --accent: #81e6d9;
+  --text: #2d3748;
+  --radius: 8px;
+  --gap: 1rem;
+  --transition: 0.3s;
+}
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      color: var(--text);
-      margin: 0;
-      background: var(--bg);
-    }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
-    .tabs {
-      display: flex;
-      background: var(--card);
-      padding: var(--gap);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
 
-    .tabs button {
-      background: none;
-      border: none;
-      padding: 0.5rem 1rem;
-      margin-right: var(--gap);
-      cursor: pointer;
-      color: var(--primary);
-      font-weight: bold;
-      border-bottom: 3px solid transparent;
-      transition: border-bottom var(--transition);
-    }
-    .tabs button:hover,
-    .tabs button.active {
-      border-bottom: 3px solid var(--accent);
-    }
+header {
+  background: var(--card);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: var(--gap);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-    .tab-content {
-      display: none;
-      padding: var(--gap);
-      margin: var(--gap);
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .tab-content.active {
-      display: block;
-    }
+.tabs {
+  display: flex;
+  gap: var(--gap);
+  overflow-x: auto;
+}
 
-    form {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      grid-row-gap: var(--gap);
-      grid-column-gap: var(--gap);
-      align-items: center;
-    }
-    form input, form button {
-      padding: 0.5rem;
-      border-radius: var(--radius);
-      border: 1px solid #ccc;
-      transition: border-color var(--transition);
-    }
-    form input:focus {
-      border-color: var(--primary);
-      outline: none;
-    }
-    form button {
-      grid-column: span 2;
-      background: var(--primary);
-      color: #fff;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-    }
-    form button:hover {
-      background: var(--accent);
-    }
+.tabs button {
+  flex: none;
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: border-bottom var(--transition), color var(--transition);
+}
 
-    .list-item {
-      display: flex;
-      justify-content: space-between;
-      background: var(--bg);
-      padding: 0.5rem;
-      margin-bottom: calc(var(--gap)/2);
-      border-radius: var(--radius);
-      align-items: center;
-    }
-    .list-item button {
-      background: none;
-      border: none;
-      color: #e74c3c;
-      cursor: pointer;
-      font-size: 1rem;
-    }
+.tabs button.active {
+  color: var(--primary);
+  border-bottom-color: var(--accent);
+}
 
-    /* POS and report styles */
-    #posItems .list-item,
-    #pettyList .list-item {
-      margin: var(--gap) 0;
-    }
+.tabs button:hover {
+  color: var(--primary);
+}
 
-    #posTotal, #pettyBalance {
-      font-weight: bold;
-      color: var(--primary);
-    }
+main {
+  padding: var(--gap);
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-  </style>
-</head>
-<body>
+.tab-content {
+  display: none;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  padding: calc(var(--gap) * 1.5);
+  margin-bottom: var(--gap);
+  transition: opacity var(--transition);
+}
 
-  <div class="tabs">
-    <button onclick="showTab('create')" id="tab-create">Create Invoice</button>
-    <button onclick="showTab('suppliers')" id="tab-suppliers">Suppliers</button>
-    <button onclick="showTab('debtors')" id="tab-debtors">Debtors</button>
-    <button onclick="showTab('creditors')" id="tab-creditors">Creditors</button>
-    <button onclick="showTab('stock')" id="tab-stock">Stock</button>
-    <button onclick="showTab('pos')" id="tab-pos">POS</button>
-    <button onclick="showTab('petty')" id="tab-petty">Petty Cash</button>
-    <button onclick="showTab('reports')" id="tab-reports">Reports</button>
-  </div>
+.tab-content.active {
+  display: block;
+  opacity: 1;
+}
 
-  <div id="create" class="tab-content">
-    <h2>Create Invoice</h2>
-    <form id="invoiceForm">
-      <label>Company:</label><input id="companyName" required>
-      <label>Invoice #:</label><input id="invoiceNumber" required>
-      <label>Client:</label><input id="clientName" required>
-      <label>Amount (R):</label><input id="invoiceAmount" type="number" required>
-      <button type="submit">Add Invoice</button>
-    </form>
-    <div id="invoiceList"></div>
-  </div>
+form {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--gap);
+  align-items: center;
+  margin-bottom: var(--gap);
+}
 
-  <!-- Repeat structure for other tabs... -->
+form label {
+  font-weight: 600;
+}
 
-  <script>
-    // copy your JS here
-  </script>
-  <script>
-    // Initialize
-    showTab('create');
-    renderInvoices();
-    renderSuppliers();
-    renderDebtors();
-    renderCreditors();
-    renderStock();
-    renderPOS();
-    renderPetty();
-    renderReports();
-  </script>
-</body>
-</html>
+form input,
+form button {
+  padding: 0.6rem;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+  transition: border-color var(--transition);
+  font-size: 1rem;
+}
+
+form input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+form button {
+  grid-column: 1 / -1;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+form button:hover {
+  background: var(--accent);
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  padding: 0.8rem;
+  margin-bottom: calc(var(--gap) / 2);
+  border-radius: var(--radius);
+}
+
+.list-item button {
+  background: none;
+  border: none;
+  color: #e53e3e;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity var(--transition);
+}
+
+.list-item button:hover {
+  opacity: 1;
+}
+
+.total {
+  font-weight: bold;
+  margin: var(--gap) 0;
+}
+
+@media (max-width: 768px) {
+  form {
+    grid-template-columns: 1fr;
+  }
+}
