@@ -12,6 +12,78 @@
     <button onclick="showTab('history')">History</button>
     <button onclick="showTab('suppliers')">Suppliers</button>
     <button onclick="showTab('debtors')">Debtors</button>
+    <button onclick="showTab('creditors')">Creditors</button>
+    <button onclick="showTab('stock')">Stock</button>
+    <button onclick="showTab('pos')">POS</button>
     <button onclick="showTab('petty')">Petty Cash</button>
-<button onclick="showTab('reports')">Daily Reports</button>
+    <button onclick="showTab('reports')">Daily Reports</button>
 
+  </nav>
+
+  <main>
+    <section id="create" class="tab">
+      <h2>Create Invoice</h2>
+      <!-- Your create invoice form goes here -->
+    </section>
+
+    <section id="history" class="tab hidden">
+      <h2>History</h2>
+      <!-- Your invoice history -->
+    </section>
+
+    <section id="suppliers" class="tab hidden">
+      <h2>Suppliers</h2>
+      <form id="supplierForm">
+        <input placeholder="Supplier Name" id="sName" required />
+        <input placeholder="Contact" id="sContact" />
+        <input placeholder="Supplies" id="sItems" />
+        <button type="submit">Add Supplier</button>
+      </form>
+      <div id="supplierList"></div>
+    </section>
+
+    <section id="debtors" class="tab hidden">
+      <h2>Debtors</h2>
+      <form id="debtorForm">
+        <input placeholder="Client Name" id="dClient" required />
+        <input placeholder="Vehicle" id="dVehicle" />
+        <input placeholder="Amount Owed (R)" id="dAmount" type="number" required />
+        <button type="submit">Add Debtor</button>
+      </form>
+      <div id="debtorList"></div>
+    </section>
+
+    <section id="creditors" class="tab hidden">
+      <h2>Creditors</h2>
+      <form id="creditorForm">
+        <input placeholder="Owed To" id="cTo" required />
+        <input placeholder="Purpose (e.g. Parts)" id="cReason" />
+        <input placeholder="Amount (R)" id="cAmount" type="number" required />
+        <button type="submit">Add Creditor</button>
+      </form>
+      <div id="creditorList"></div>
+    </section>
+
+    <section id="stock" class="tab hidden">
+      <h2>Stock Inventory</h2>
+      <form id="stockForm">
+        <input placeholder="Item Name" id="stockName" required />
+        <input placeholder="Quantity" id="stockQty" type="number" required />
+        <input placeholder="Cost Price (R)" id="stockCost" type="number" step="0.01" required />
+        <input placeholder="Selling Price (R)" id="stockSell" type="number" step="0.01" required />
+        <button type="submit">Add / Update Stock</button>
+      </form>
+      <div id="stockList"></div>
+    </section>
+
+    <section id="pos" class="tab hidden">
+      <h2>Point of Sale</h2>
+      <div id="posItems"></div>
+      <h3>Total: R<span id="posTotal">0.00</span></h3>
+      <button onclick="completeSale()">Complete Sale</button>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
