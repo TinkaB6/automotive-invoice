@@ -5,9 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function showTab(id) {
     sections.forEach(sec => sec.classList.remove("active"));
     const tabSection = document.getElementById(id);
-    if (tabSection) {
-      tabSection.classList.add("active");
-    }
+    if (tabSection) tabSection.classList.add("active");
   }
 
   tabs.forEach(tab => {
@@ -223,7 +221,7 @@ function renderPOS() {
     </div>`).join("");
   updatePOSTotal();
 }
-function addToCart(idx) {
+window.addToCart = function(idx) {
   const stock = JSON.parse(localStorage.getItem("stock") || "[]");
   if (stock[idx].quantity <= 0) {
     alert("Out of stock!");
@@ -241,11 +239,10 @@ function updatePOSTotal() {
   const posTotalElem = document.getElementById("posTotal");
   if (posTotalElem) posTotalElem.textContent = total.toFixed(2);
 }
-document.addEventListener("click", e => {
-  if (e.target.matches("button") && e.target.textContent === "Complete Sale") {
-    completeSale();
-  }
-});
+const completeSaleBtn = document.getElementById("completeSaleBtn");
+if (completeSaleBtn) {
+  completeSaleBtn.addEventListener("click", completeSale);
+}
 function completeSale() {
   if (posCart.length === 0) {
     alert("Cart is empty!");
@@ -307,3 +304,11 @@ function renderReports() {
     `).join("");
   }
 }
+
+// Expose delete functions for inline onclick
+window.deleteInvoice = deleteInvoice;
+window.deleteSupplier = deleteSupplier;
+window.deleteDebtor = deleteDebtor;
+window.deleteCreditor = deleteCreditor;
+window.deleteStock = deleteStock;
+window.deletePetty = deletePetty;
