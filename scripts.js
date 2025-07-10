@@ -17,13 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Restore the last active tab, or default to "create"
+  // Restore last active tab, or default to "create"
   const lastTab = localStorage.getItem("activeTab") || "create";
   showTab(lastTab);
   renderAll();
 });
 
-// Render helper to update all sections
 function renderAll() {
   renderInvoices();
   renderSuppliers();
@@ -56,18 +55,64 @@ function renderInvoices() {
   const list = JSON.parse(localStorage.getItem("invoices") || "[]");
   const container = document.getElementById("invoiceList");
   if (!container) return;
-  container.innerHTML = list.map((i, idx) => `
-    <div class="list-item">
-      <span><strong>${i.company || ""}</strong> #${i.number || ""} → ${i.client || ""} ‒ R${typeof i.amount === "number" && !isNaN(i.amount) ? i.amount.toFixed(2) : "0.00"}</span>
-      <button onclick="deleteInvoice(${idx})">🗑️</button>
-    </div>`).join("");
+
+  if (list.length === 0) {
+    container.innerHTML = "<div>No invoices yet.</div>";
+    return;
+  }
+
+  container.innerHTML = `
+    <table class="overview-table">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Invoice #</th>
+          <th>Client</th>
+          <th>Amount (R)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map((i, idx) => `
+        <tr>
+          <td>${i.company || ""}</td>
+          <td>${i.number || ""}</td>
+          <td>${i.client || ""}</td>
+          <td>${typeof i.amount === "number" && !isNaN(i.amount) ? i.amount.toFixed(2) : "0.00"}</td>
+          <td>
+            <button onclick="printInvoice(${idx})">🖨️ Print</button>
+            <button onclick="deleteInvoice(${idx})">🗑️ Delete</button>
+          </td>
+        </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 }
-function deleteInvoice(i) {
+window.deleteInvoice = function(i) {
   const list = JSON.parse(localStorage.getItem("invoices") || "[]");
   list.splice(i, 1);
   localStorage.setItem("invoices", JSON.stringify(list));
   renderInvoices();
-}
+};
+window.printInvoice = function(idx) {
+  const list = JSON.parse(localStorage.getItem("invoices") || "[]");
+  const i = list[idx];
+  if (!i) return;
+  const html = `
+    <h2>Invoice</h2>
+    <p><strong>Company:</strong> ${i.company}</p>
+    <p><strong>Invoice #:</strong> ${i.number}</p>
+    <p><strong>Client:</strong> ${i.client}</p>
+    <p><strong>Amount:</strong> R${typeof i.amount === "number" && !isNaN(i.amount) ? i.amount.toFixed(2) : "0.00"}</p>
+  `;
+  const w = window.open('', '', 'width=600,height=400');
+  w.document.write(`<html><head><title>Print Invoice</title>
+    <style>body{font-family:sans-serif;padding:2em;}h2{margin-bottom:1em;}</style>
+    </head><body>${html}</body></html>`);
+  w.print();
+  w.close();
+};
 
 /* ===== SUPPLIERS ===== */
 const supplierForm = document.getElementById("supplierForm");
@@ -89,18 +134,41 @@ function renderSuppliers() {
   const list = JSON.parse(localStorage.getItem("suppliers") || "[]");
   const container = document.getElementById("supplierList");
   if (!container) return;
-  container.innerHTML = list.map((s, idx) => `
-    <div class="list-item">
-      <span><strong>${s.name || ""}</strong> – ${s.contact || ""} (${s.items || ""})</span>
-      <button onclick="deleteSupplier(${idx})">🗑️</button>
-    </div>`).join("");
+  if (list.length === 0) {
+    container.innerHTML = "<div>No suppliers yet.</div>";
+    return;
+  }
+  container.innerHTML = `
+    <table class="overview-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Contact</th>
+          <th>Items</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map((s, idx) => `
+        <tr>
+          <td>${s.name || ""}</td>
+          <td>${s.contact || ""}</td>
+          <td>${s.items || ""}</td>
+          <td>
+            <button onclick="deleteSupplier(${idx})">🗑️ Delete</button>
+          </td>
+        </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 }
-function deleteSupplier(i) {
+window.deleteSupplier = function(i) {
   const list = JSON.parse(localStorage.getItem("suppliers") || "[]");
   list.splice(i, 1);
   localStorage.setItem("suppliers", JSON.stringify(list));
   renderSuppliers();
-}
+};
 
 /* ===== DEBTORS ===== */
 const debtorForm = document.getElementById("debtorForm");
@@ -122,18 +190,41 @@ function renderDebtors() {
   const list = JSON.parse(localStorage.getItem("debtors") || "[]");
   const container = document.getElementById("debtorList");
   if (!container) return;
-  container.innerHTML = list.map((d, idx) => `
-    <div class="list-item">
-      <span><strong>${d.client || ""}</strong> – ${d.vehicle || ""} – R${typeof d.amount === "number" && !isNaN(d.amount) ? d.amount.toFixed(2) : "0.00"}</span>
-      <button onclick="deleteDebtor(${idx})">🗑️</button>
-    </div>`).join("");
+  if (list.length === 0) {
+    container.innerHTML = "<div>No debtors yet.</div>";
+    return;
+  }
+  container.innerHTML = `
+    <table class="overview-table">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Vehicle</th>
+          <th>Amount (R)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map((d, idx) => `
+        <tr>
+          <td>${d.client || ""}</td>
+          <td>${d.vehicle || ""}</td>
+          <td>${typeof d.amount === "number" && !isNaN(d.amount) ? d.amount.toFixed(2) : "0.00"}</td>
+          <td>
+            <button onclick="deleteDebtor(${idx})">🗑️ Delete</button>
+          </td>
+        </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 }
-function deleteDebtor(i) {
+window.deleteDebtor = function(i) {
   const list = JSON.parse(localStorage.getItem("debtors") || "[]");
   list.splice(i, 1);
   localStorage.setItem("debtors", JSON.stringify(list));
   renderDebtors();
-}
+};
 
 /* ===== CREDITORS ===== */
 const creditorForm = document.getElementById("creditorForm");
@@ -155,18 +246,41 @@ function renderCreditors() {
   const list = JSON.parse(localStorage.getItem("creditors") || "[]");
   const container = document.getElementById("creditorList");
   if (!container) return;
-  container.innerHTML = list.map((c, idx) => `
-    <div class="list-item">
-      <span><strong>${c.to || ""}</strong> – ${c.reason || ""} – R${typeof c.amount === "number" && !isNaN(c.amount) ? c.amount.toFixed(2) : "0.00"}</span>
-      <button onclick="deleteCreditor(${idx})">🗑️</button>
-    </div>`).join("");
+  if (list.length === 0) {
+    container.innerHTML = "<div>No creditors yet.</div>";
+    return;
+  }
+  container.innerHTML = `
+    <table class="overview-table">
+      <thead>
+        <tr>
+          <th>To</th>
+          <th>Reason</th>
+          <th>Amount (R)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map((c, idx) => `
+        <tr>
+          <td>${c.to || ""}</td>
+          <td>${c.reason || ""}</td>
+          <td>${typeof c.amount === "number" && !isNaN(c.amount) ? c.amount.toFixed(2) : "0.00"}</td>
+          <td>
+            <button onclick="deleteCreditor(${idx})">🗑️ Delete</button>
+          </td>
+        </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 }
-function deleteCreditor(i) {
+window.deleteCreditor = function(i) {
   const list = JSON.parse(localStorage.getItem("creditors") || "[]");
   list.splice(i, 1);
   localStorage.setItem("creditors", JSON.stringify(list));
   renderCreditors();
-}
+};
 
 /* ===== STOCK ===== */
 const stockForm = document.getElementById("stockForm");
@@ -198,18 +312,43 @@ function renderStock() {
   const list = JSON.parse(localStorage.getItem("stock") || "[]");
   const container = document.getElementById("stockList");
   if (!container) return;
-  container.innerHTML = list.map((it, idx) => `
-    <div class="list-item">
-      <span><strong>${it.name || ""}</strong> – Qty: ${it.quantity || 0}, Cost: R${typeof it.cost === "number" && !isNaN(it.cost) ? it.cost.toFixed(2) : "0.00"}, Sell: R${typeof it.sell === "number" && !isNaN(it.sell) ? it.sell.toFixed(2) : "0.00"}</span>
-      <button onclick="deleteStock(${idx})">🗑️</button>
-    </div>`).join("");
+  if (list.length === 0) {
+    container.innerHTML = "<div>No stock items yet.</div>";
+    return;
+  }
+  container.innerHTML = `
+    <table class="overview-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Quantity</th>
+          <th>Cost (R)</th>
+          <th>Selling Price (R)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map((it, idx) => `
+        <tr>
+          <td>${it.name || ""}</td>
+          <td>${it.quantity || 0}</td>
+          <td>${typeof it.cost === "number" && !isNaN(it.cost) ? it.cost.toFixed(2) : "0.00"}</td>
+          <td>${typeof it.sell === "number" && !isNaN(it.sell) ? it.sell.toFixed(2) : "0.00"}</td>
+          <td>
+            <button onclick="deleteStock(${idx})">🗑️ Delete</button>
+          </td>
+        </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 }
-function deleteStock(i) {
+window.deleteStock = function(i) {
   const list = JSON.parse(localStorage.getItem("stock") || "[]");
   list.splice(i, 1);
   localStorage.setItem("stock", JSON.stringify(list));
   renderStock();
-}
+};
 
 /* ===== POS ===== */
 let posCart = [];
@@ -217,12 +356,15 @@ function renderPOS() {
   const stock = JSON.parse(localStorage.getItem("stock") || "[]");
   const container = document.getElementById("posItems");
   if (!container) return;
-  container.innerHTML = stock.map((it, idx) => `
-    <div class="list-item">
-      <span><strong>${it.name || ""}</strong> – ${it.quantity || 0} in stock @ R${typeof it.sell === "number" && !isNaN(it.sell) ? it.sell.toFixed(2) : "0.00"}</span>
-      <button onclick="addToCart(${idx})">Add</button>
-    </div>`).join("");
+  container.innerHTML = stock.length === 0
+    ? "<div>No stock available for sale.</div>"
+    : stock.map((it, idx) => `
+      <div class="list-item">
+        <span><strong>${it.name || ""}</strong> – ${it.quantity || 0} in stock @ R${typeof it.sell === "number" && !isNaN(it.sell) ? it.sell.toFixed(2) : "0.00"}</span>
+        <button onclick="addToCart(${idx})">Add</button>
+      </div>`).join("");
   updatePOSTotal();
+  renderSalesHistory();
 }
 window.addToCart = function(idx) {
   const stock = JSON.parse(localStorage.getItem("stock") || "[]");
@@ -236,7 +378,7 @@ window.addToCart = function(idx) {
   stock[idx].quantity--;
   localStorage.setItem("stock", JSON.stringify(stock));
   renderPOS();
-}
+};
 function updatePOSTotal() {
   const total = posCart.reduce((sum, i) => sum + i.price * i.qty, 0);
   const posTotalElem = document.getElementById("posTotal");
@@ -254,11 +396,56 @@ function completeSale() {
   const total = posCart.reduce((sum, i) => sum + i.price * i.qty, 0);
   const today = new Date().toISOString().slice(0, 10);
   const sales = JSON.parse(localStorage.getItem("sales") || "{}");
-  sales[today] = (sales[today] || 0) + total;
+  if (!sales[today]) sales[today] = [];
+  sales[today].push({
+    items: posCart.map(i => ({ ...i })),
+    total,
+    time: new Date().toLocaleTimeString()
+  });
   localStorage.setItem("sales", JSON.stringify(sales));
   alert(`Sale completed. Total: R${total.toFixed(2)}`);
   posCart = [];
   renderPOS();
+}
+function renderSalesHistory() {
+  const sales = JSON.parse(localStorage.getItem("sales") || "{}");
+  let allSales = [];
+  Object.entries(sales).forEach(([date, salesArr]) => {
+    salesArr.forEach(sale => {
+      allSales.push({ date, ...sale });
+    });
+  });
+  const container = document.getElementById("salesHistory");
+  if (!container) return;
+  if (allSales.length === 0) {
+    container.innerHTML = "<div>No sales yet.</div>";
+    return;
+  }
+  allSales.sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+  container.innerHTML = `
+    <table class="overview-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Items</th>
+          <th>Total (R)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${allSales.map(sale => `
+        <tr>
+          <td>${sale.date}</td>
+          <td>${sale.time || ""}</td>
+          <td>
+            ${sale.items.map(i => `${i.name} x${i.qty}`).join("<br>")}
+          </td>
+          <td>${typeof sale.total === "number" && !isNaN(sale.total) ? sale.total.toFixed(2) : "0.00"}</td>
+        </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 }
 
 /* ===== PETTY CASH ===== */
@@ -280,18 +467,39 @@ function renderPetty() {
   if (pettyBalanceElem) pettyBalanceElem.textContent = total.toFixed(2);
   const container = document.getElementById("pettyList");
   if (!container) return;
-  container.innerHTML = list.map((p, idx) => `
-    <div class="list-item">
-      <span>${p.desc || ""} – R${typeof p.amount === "number" && !isNaN(p.amount) ? p.amount.toFixed(2) : "0.00"}</span>
-      <button onclick="deletePetty(${idx})">🗑️</button>
-    </div>`).join("");
+  if (list.length === 0) {
+    container.innerHTML = "<div>No petty cash transactions yet.</div>";
+    return;
+  }
+  container.innerHTML = `
+    <table class="overview-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Amount (R)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map((p, idx) => `
+        <tr>
+          <td>${p.desc || ""}</td>
+          <td>${typeof p.amount === "number" && !isNaN(p.amount) ? p.amount.toFixed(2) : "0.00"}</td>
+          <td>
+            <button onclick="deletePetty(${idx})">🗑️ Delete</button>
+          </td>
+        </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 }
-function deletePetty(i) {
+window.deletePetty = function(i) {
   const list = JSON.parse(localStorage.getItem("petty") || "[]");
   list.splice(i, 1);
   localStorage.setItem("petty", JSON.stringify(list));
   renderPetty();
-}
+};
 
 /* ===== DAILY REPORTS ===== */
 function renderReports() {
@@ -301,17 +509,29 @@ function renderReports() {
   if (!container) return;
   if (dates.length === 0) {
     container.innerHTML = "<div>No sales recorded yet.</div>";
-  } else {
-    container.innerHTML = dates.map(d => `
-      <div class="list-item"><span>${d}: R${typeof sales[d] === "number" && !isNaN(sales[d]) ? sales[d].toFixed(2) : "0.00"}</span></div>
-    `).join("");
+    return;
   }
+  container.innerHTML = `
+    <table class="overview-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th># of Sales</th>
+          <th>Total (R)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${dates.map(d => {
+          const total = sales[d].reduce((sum, s) => sum + (typeof s.total === "number" ? s.total : 0), 0);
+          return `
+          <tr>
+            <td>${d}</td>
+            <td>${sales[d].length}</td>
+            <td>${total.toFixed(2)}</td>
+          </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
 }
-
-// Expose delete functions for inline onclick
-window.deleteInvoice = deleteInvoice;
-window.deleteSupplier = deleteSupplier;
-window.deleteDebtor = deleteDebtor;
-window.deleteCreditor = deleteCreditor;
-window.deleteStock = deleteStock;
-window.deletePetty = deletePetty;
