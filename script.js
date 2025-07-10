@@ -198,6 +198,11 @@ document.querySelectorAll('button').forEach(btn => {
     renderCreditors();
     renderStock();
     renderPOS();
+    renderPetty();
+    renderReports();
+  });
+});
+
   });
 });
 // === PETTY CASH ===
@@ -231,4 +236,14 @@ function deletePetty(i){
   list.splice(i,1);
   localStorage.setItem('petty', JSON.stringify(list));
   renderPetty();
+}
+// === DAILY REPORTS ===
+const reportList = document.getElementById('reportList');
+
+function renderReports(){
+  const sales = JSON.parse(localStorage.getItem('sales')||'{}');
+  const days = Object.keys(sales).sort((a,b)=> b.localeCompare(a));
+  reportList.innerHTML = days.length 
+    ? days.map(day=> `<div>${day}: R${sales[day].toFixed(2)}</div>`).join('')
+    : "<div>No sales recorded yet.</div>";
 }
