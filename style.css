@@ -13,3 +13,6 @@ main { padding:20px; }
 .total { font-weight:bold; margin-top:10px; }
 .history-item { border:1px solid #ccc; padding:10px; margin-bottom:10px; }
 .nav-btn { padding:5px 8px; background:#dc3545; color:#fff; border:none; cursor:pointer; float:right; }
+#pettyList div, #reportList div {
+  margin: 5px 0;
+}
