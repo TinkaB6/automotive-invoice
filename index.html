@@ -21,6 +21,8 @@
   <button onclick="showTab('debtors')">Debtors</button>
   <button onclick="showTab('creditors')">Creditors</button>
   <button onclick="showTab('stock')">Stock</button>
+  <button onclick="showTab('pos')">POS</button>
+
 
 </nav>
 <section id="suppliers" class="tab hidden">
@@ -65,6 +67,12 @@
     <button type="submit">Add / Update Stock</button>
   </form>
   <div id="stockList"></div>
+</section>
+<section id="pos" class="tab hidden">
+  <h2>Point of Sale</h2>
+  <div id="posItems"></div>
+  <h3>Total: R<span id="posTotal">0.00</span></h3>
+  <button onclick="completeSale()">Complete Sale</button>
 </section>
 
   <main>
