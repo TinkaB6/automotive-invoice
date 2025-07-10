@@ -175,9 +175,19 @@ function completeSale(){
     alert("Cart is empty!");
     return;
   }
-  alert("Sale completed. Total: R" + document.getElementById('posTotal').textContent);
+  let total = posCart.reduce((sum, item)=> sum + item.price * item.qty, 0);
+
+  // Save to daily sales
+  const today = new Date().toISOString().slice(0,10); // e.g. 2025-07-10
+  let sales = JSON.parse(localStorage.getItem('sales')||'{}');
+  sales[today] = (sales[today]||0) + total;
+  localStorage.setItem('sales', JSON.stringify(sales));
+
+  alert("Sale completed. Total: R" + total.toFixed(2));
   posCart = [];
   renderPOS();
+}
+
 }
 
 // === INIT ALL ON TAB OPEN ===
@@ -190,3 +200,35 @@ document.querySelectorAll('button').forEach(btn => {
     renderPOS();
   });
 });
+// === PETTY CASH ===
+const pettyForm = document.getElementById('pettyForm');
+const pettyDesc = document.getElementById('pettyDesc');
+const pettyAmount = document.getElementById('pettyAmount');
+const pettyList = document.getElementById('pettyList');
+const pettyBalance = document.getElementById('pettyBalance');
+
+pettyForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const all = JSON.parse(localStorage.getItem('petty')||'[]');
+  all.push({desc: pettyDesc.value, amount: +pettyAmount.value});
+  localStorage.setItem('petty', JSON.stringify(all));
+  pettyForm.reset();
+  renderPetty();
+});
+
+function renderPetty(){
+  const list = JSON.parse(localStorage.getItem('petty')||'[]');
+  let total = list.reduce((sum, p)=> sum + p.amount, 0);
+  pettyBalance.textContent = total.toFixed(2);
+  pettyList.innerHTML = list.map((p,i)=>`
+    <div>${p.desc} – R${p.amount.toFixed(2)}
+    <button onclick="deletePetty(${i})">🗑️</button></div>
+  `).join('');
+}
+
+function deletePetty(i){
+  const list = JSON.parse(localStorage.getItem('petty')||'[]');
+  list.splice(i,1);
+  localStorage.setItem('petty', JSON.stringify(list));
+  renderPetty();
+}
