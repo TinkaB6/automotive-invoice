@@ -19,6 +19,21 @@
     <button onclick="showTab('reports')">Daily Reports</button>
 
   </nav>
+<section id="petty" class="tab hidden">
+  <h2>Petty Cash</h2>
+  <form id="pettyForm">
+    <input placeholder="Description" id="pettyDesc" required />
+    <input placeholder="Amount (R)" id="pettyAmount" type="number" step="0.01" required />
+    <button type="submit">Add Expense</button>
+  </form>
+  <h3>Balance: R<span id="pettyBalance">0.00</span></h3>
+  <div id="pettyList"></div>
+</section>
+
+<section id="reports" class="tab hidden">
+  <h2>Daily Sales Reports</h2>
+  <div id="reportList"></div>
+</section>
 
   <main>
     <section id="create" class="tab">
