@@ -21,7 +21,7 @@ export default function Login() {
     const { error } = await supabase.auth.signUp({ email, password })
     setLoading(false)
     if (error) alert('Signup failed: ' + error.message)
-    else alert('Check your email for confirmation link!')
+    else alert('Check your email for confirmation!')
   }
 
   return (
