@@ -1,3 +1,14 @@
+import Navbar from '../components/Navbar'
+...
+return (
+  <>
+    <Navbar />
+    <div style={{ padding: 20 }}>
+      ...rest of your page...
+    </div>
+  </>
+)
+
 import { useEffect, useState } from 'react'
 import { supabase } from '../utils/supabaseClient'
 
