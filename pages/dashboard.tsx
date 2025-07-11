@@ -1,14 +1,4 @@
 import Navbar from '../components/Navbar'
-...
-return (
-  <>
-    <Navbar />
-    <div style={{ padding: 20 }}>
-      ...rest of your page...
-    </div>
-  </>
-)
-
 import { useEffect, useState } from 'react'
 import { supabase } from '../utils/supabaseClient'
 
@@ -27,20 +17,23 @@ export default function Dashboard() {
   }, [])
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Dashboard</h1>
-      <h2>Sales</h2>
-      <ul>
-        {sales.map(s => (
-          <li key={s.id}>{s.date}: {s.total} USD</li>
-        ))}
-      </ul>
-      <h2>Inventory</h2>
-      <ul>
-        {products.map(p => (
-          <li key={p.id}>{p.name} - Qty: {p.qty}</li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <Navbar />
+      <div style={{ padding: 20 }}>
+        <h1>Dashboard</h1>
+        <h2>Sales</h2>
+        <ul>
+          {sales.map(s => (
+            <li key={s.id}>{s.date}: {s.total} USD</li>
+          ))}
+        </ul>
+        <h2>Inventory</h2>
+        <ul>
+          {products.map(p => (
+            <li key={p.id}>{p.name} - Qty: {p.qty}</li>
+          ))}
+        </ul>
+      </div>
+    </>
   )
 }
