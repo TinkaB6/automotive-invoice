@@ -1,13 +1,4 @@
 import Navbar from '../components/Navbar'
-...
-return (
-  <>
-    <Navbar />
-    <div style={{ padding: 20 }}>
-      ...rest of your page...
-    </div>
-  </>
-)
 import { useState, useEffect } from 'react'
 import { supabase } from '../utils/supabaseClient'
 
@@ -16,9 +7,7 @@ export default function Invoices() {
   const [customer, setCustomer] = useState('')
   const [total, setTotal] = useState(0)
 
-  useEffect(() => {
-    fetchSales()
-  }, [])
+  useEffect(() => { fetchSales() }, [])
 
   async function fetchSales() {
     let { data } = await supabase.from('sales').select('*')
@@ -35,13 +24,21 @@ export default function Invoices() {
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Invoices</h1>
-      <input placeholder="Customer Name" value={customer} onChange={e => setCustomer(e.target.value)} />
-      <input type="number" placeholder="Total" value={total} onChange={e => setTotal(Number(e.target.value))} />
-      <button onClick={createInvoice}>Create Invoice</button>
+    <>
+      <Navbar />
+      <div style={{ padding: 20 }}>
+        <h1>Invoices</h1>
+        <input placeholder="Customer Name" value={customer} onChange={e => setCustomer(e.target.value)} />
+        <input type="number" placeholder="Total" value={total} onChange={e => setTotal(Number(e.target.value))} />
+        <button onClick={createInvoice}>Create Invoice</button>
 
-      <h2>All Invoices</h2>
-      <ul>
-        {sales.map(s => (
-          <li key={s.id}>{s
+        <h2>All Invoices</h2>
+        <ul>
+          {sales.map(s => (
+            <li key={s.id}>{s.customer_name} on {s.date} - Total: {s.total}</li>
+          ))}
+        </ul>
+      </div>
+    </>
+  )
+}
