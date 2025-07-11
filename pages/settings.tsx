@@ -1,3 +1,4 @@
+import Navbar from '../components/Navbar'
 import { useEffect, useState } from 'react'
 import { supabase } from '../utils/supabaseClient'
 
@@ -13,14 +14,17 @@ export default function Settings() {
   }, [])
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Settings & Audit Logs</h1>
-      <h2>Audit Logs</h2>
-      <ul>
-        {logs.map(l => (
-          <li key={l.id}>{l.user_id} did {l.action} on {l.timestamp}</li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <Navbar />
+      <div style={{ padding: 20 }}>
+        <h1>Settings & Audit Logs</h1>
+        <h2>Audit Logs</h2>
+        <ul>
+          {logs.map(l => (
+            <li key={l.id}>{l.user_id} did {l.action} on {l.timestamp}</li>
+          ))}
+        </ul>
+      </div>
+    </>
   )
 }
