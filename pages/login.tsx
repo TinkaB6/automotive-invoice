@@ -1,24 +1,34 @@
-import { useState } from 'react'
-import { supabase } from '../utils/supabaseClient'
-import { useRouter } from 'next/router'
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { supabase } from '../utils/supabaseClient';
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const router = useRouter()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const router = useRouter();
 
-  async function handleLogin() {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) alert(error.message)
-    else router.push('/dashboard')
-  }
+  const handleLogin = async () => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      alert('Login failed: ' + error.message);
+    } else {
+      router.push('/dashboard');
+    }
+  };
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: 40, maxWidth: 400, margin: 'auto' }}>
       <h2>Login</h2>
-      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} /><br/>
-      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} /><br/>
-      <button onClick={handleLogin}>Log In</button>
-    </div>
-  )
-}
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        style={{ width: '100%', padding: 10, marginBottom: 10 }}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={{ width: '100%'
