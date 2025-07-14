@@ -8,7 +8,10 @@ export default function Login() {
   const router = useRouter()
 
   async function handleLogin() {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
     if (error) {
       alert(error.message)
     } else {
@@ -32,6 +35,6 @@ export default function Login() {
         onChange={(e) => setPassword(e.target.value)}
       />
       <button onClick={handleLogin}>Log In</button>
-    </div> 
+    </div>
   )
 }
