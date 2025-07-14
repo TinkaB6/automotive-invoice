@@ -32,6 +32,6 @@ export default function Login() {
         onChange={(e) => setPassword(e.target.value)}
       />
       <button onClick={handleLogin}>Log In</button>
-    </div>  // ✅ Correctly closed!
+    </div>  {/* ✅ Make sure this closing tag exists */}
   )
 }
