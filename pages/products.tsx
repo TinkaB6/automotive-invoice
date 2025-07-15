@@ -1,13 +1,11 @@
-import Navbar from '../components/Navbar'
+// pages/products.tsx
+import Navbar from "../components/Navbar";
 
 export default function Products() {
   return (
-    <>
+    <div>
       <Navbar />
-      <div style={{ padding: 20 }}>
-        <h2>Products Page</h2>
-        <p>Product listing goes here.</p>
-      </div>
-    </>
-  )
+      <h2 style={{ padding: "2rem" }}>Products Page</h2>
+    </div>
+  );
 }
