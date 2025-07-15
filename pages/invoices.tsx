@@ -1,13 +1,11 @@
-import Navbar from '../components/Navbar'
+// pages/invoices.tsx
+import Navbar from "../components/Navbar";
 
 export default function Invoices() {
   return (
-    <>
+    <div>
       <Navbar />
-      <div style={{ padding: 20 }}>
-        <h2>Invoices Page</h2>
-        <p>Invoices will appear here.</p>
-      </div>
-    </>
-  )
+      <h2 style={{ padding: "2rem" }}>Invoices Page</h2>
+    </div>
+  );
 }
