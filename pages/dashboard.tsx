@@ -1,25 +1,25 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '../utils/supabaseClient'
-import Navbar from '../components/Navbar'
+// pages/dashboard.tsx
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { supabase } from "../utils/supabaseClient";
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null)
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const getUser = async () => {
-      const { data } = await supabase.auth.getUser()
-      setUser(data?.user)
-    }
-    getUser()
-  }, [])
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) router.push("/login");
+      else setUser(user);
+    };
+    getUser();
+  }, []);
 
   return (
-    <>
-      <Navbar />
-      <div style={{ padding: 20 }}>
-        <h2>Welcome {user?.email}</h2>
-        <p>This is the dashboard.</p>
-      </div>
-    </>
-  )
+    <div style={{ padding: "2rem" }}>
+      <h1>Dashboard</h1>
+      {user && <p>Welcome, {user.email}</p>}
+    </div>
+  );
 }
